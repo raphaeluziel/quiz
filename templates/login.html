@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Login/Register
+{% endblock %}
+
+{% block body %}
+  <h1>CS50W Project 1: Book Review</h1>
+
+  <p>
+    &nbsp;&nbsp;&nbsp;&nbsp;Welcome, guest, to my book review site.  Please register, or login to search books, and reviews others like you have posted.  In addition, you can get information from books from <a href="https://www.goodreads.com/" target="_blank">Goodreads</a>, a very popular book review site.
+  </p>
+
+  <div class="flex-layout">
+    <div>
+      <form action="login" method="post">
+        <div class="form-group user-form">
+          <b>Log in:</b>
+          <input class="form-control" name="username" placeholder="username">
+          <input class="form-control" name="password" placeholder="password" type="password">
+          <button class="btn btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
+    <div>
+      <form action="register" method="post">
+        <div class="form-group user-form">
+          <b>Register:</b>
+          <input class="form-control" name="name" placeholder="Name">
+          <input class="form-control" name="username" placeholder="Username">
+          <input class="form-control" name="email" placeholder="Email" type="email">
+          <input class="form-control" name="password" placeholder="Password" type="password">
+          <button class="btn btn-primary">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p class="error-message">{{ message }}</p>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Game Page
+{% endblock %}
+
+{% block body %}
+
+  <h1>Game Over!</h1>
+
+  <ol>
+    {% for answer in answers %}
+      <li>{{ answer }}</li>
+    {% endfor %}
+  </ol>
+
+
+{% endblock %}

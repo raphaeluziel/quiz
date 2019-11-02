@@ -1,0 +1,40 @@
+body {
+  margin: 20px;
+  background-color: rgba(255, 99, 71, 0.7);
+}
+
+h1{
+  text-align: center;
+}
+.form-check{
+  margin-left: 20px;
+}
+.form-check-input{
+  width: 18px;
+  height: 18px;
+}
+.form-check-label{
+  margin-left: 6px;
+  padding: 3px 0;
+}
+.error{
+  color: green;
+  font-size: 1.5em;
+}
+.nav{
+  background-color: lightyellow;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 5px;
+  display: flex;
+  justify-content: space-around;
+  overflow: hidden;
+}
+.nav a{
+  color: darkred;
+  text-decoration: none;
+  display: block;
+}
+.nav a:hover{
+  background: lightblue;
+}

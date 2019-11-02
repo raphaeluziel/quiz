@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Teacher Page
+{% endblock %}
+
+{% block body %}
+
+  <h1>Welcome, {{ user.name }}</h1>
+
+  <h4>Create a game:</h4>
+  <form action="{{ url_for('create_new_game') }}" method="post">
+    <div class="form-group">
+      <input type="text" class="form-control" name="game_name" placeholder="Enter a name for your game" required>
+    </div>
+    <div>Select the questions you wold like to have in your game:</div>
+    {% for question in questions %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="questions" value="{{ question.question_id }}">
+        <label class="form-check-label" for="questions">{{ question.question }}</label>
+      </div>
+    {% endfor %}
+    <br>
+    <button type="submit" class="btn btn-primary">Create New Game</button>
+  </form>
+
+  <br>
+  <h4>Add a question to the database:</h4>
+  <form action="{{ url_for('add_new_question') }}" method="post">
+    <div class="form-group">
+      <input type="text" class="form-control" name="question" placeholder="Question" required>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="choice_a" placeholder="Answer Choice A">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="choice_b" placeholder="Answer Choice B">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="choice_c" placeholder="Answer Choice C">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="choice_d" placeholder="Answer Choice D">
+    </div>
+    Correct Answer:
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="answer" id="inlineRadio1"value="A">
+      <label class="form-check-label" for="inlineRadio1">A</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="answer" id="inlineRadio2"value="B">
+      <label class="form-check-label" for="inlineRadio2">B</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="answer" id="inlineRadio1"value="C">
+      <label class="form-check-label" for="inlineRadio1">C</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="answer" id="inlineRadio2"value="D">
+      <label class="form-check-label" for="inlineRadio2">D</label>
+    </div>
+    <br><br>
+    <button type="submit" class="btn btn-primary">Add Question</button>
+  </form>
+
+  <br>
+  <h4>Choose a game:</h4>
+  <ul>
+    {% for game in games %}
+      <li><a href="{{ url_for('game', teacher='uziel', game_name=game.game_name) }}">{{ game.game_name }}</a></li>
+   {% endfor %}
+  </ul>
+
+
+  <div class="error">{{ message }}</div>
+
+{% endblock %}

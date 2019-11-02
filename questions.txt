@@ -1,0 +1,725 @@
+1.
+Which quantities are scalar?
+a)	*speed and work
+b)	velocity and force
+c)	distance and acceleration
+d)	momentum and power
+
+2.
+A 3.00-kilogram mass is thrown vertically upward with an initial speed of 9.80 meters per second. What is the maximum height this object will reach? [Neglect friction.]
+a)	1.00 m
+b)	*4.90 m
+c)	9.80 m
+d)	19.6 m
+
+3.
+A 160.-kilogram space vehicle is traveling along a straight line at a constant speed of 800. meters per second. The magnitude of the net force on the space vehicle is
+a)	*0 N
+b)	1.60 × 102 N
+c)	8.00 × 102 N
+d)	1.28 × 105 N
+
+4.
+A student throws a 5.0-newton ball straight up.  What is the net force on the ball at its maximum height?
+a)	0.0 N
+b)	5.0 N, up
+c)	*5.0 N, down
+d)	9.8 N, down
+
+5.
+A vertical spring has a spring constant of 100. newtons per meter. When an object is attached to the bottom of the spring, the spring changes from its unstretched length of 0.50 meter to a length of 0.65 meter. The magnitude of the weight of the attached object is
+a)	1.1 N
+b)	*15 N
+c)	50. N
+d)	65 N
+
+
+6.
+A 1.5-kilogram cart initially moves at 2.0 meters per second. It is brought to rest by a constant net force in 0.30 second. What is the magnitude of the net force?
+a)	0.40 N
+b)	0.90 N
+c)	*10. N
+d)	15 N
+
+8.	Question 8
+Which characteristic of a light wave must increase as the light wave passes from glass into air?
+a)	amplitude
+b)	frequency
+c)	period
+d)	*wavelength
+
+9.	Question 9
+As a 5.0 × 102-newton basketball player jumps from the floor up toward the basket, the magnitude of the force of her feet on the floor is 1.0 × 103 newtons. As she jumps, the magnitude of the force of the floor on her feet is
+a)	5.0 × 102 N
+b)	*1.0 × 103 N
+c)	1.5 × 103 N
+d)	5.0 × 105 N
+
+10.	Question 10
+A 0.0600-kilogram ball traveling at 60.0 meters per second hits a concrete wall. What speed must a 0.0100-kilogram bullet have in order to hit the wall with the same magnitude of momentum as the ball?
+a)	3.60 m/s
+b)	6.00 m/s
+c)	*360. m/s
+d)	600. m/s
+
+11.	Question 11
+The Hubble telescope’s orbit is 5.6 × 105 meters above Earth’s surface. The telescope has a mass of 1.1 × 104 kilograms. Earth exerts a gravitational force of 9.1 × 104 newtons on the telescope. The magnitude of Earth’s gravitational field strength at this location is
+a)	1.5 × 10−20 N/kg
+b)	0.12 N/kg
+c)	*8.3 N/kg
+d)	9.8 N/kg
+
+12.	Question 12
+When two point charges are a distance d apart, the magnitude of the electrostatic force between them is F. If the distance between the point charges is increased to 3d, the magnitude of the electrostatic force between the two charges will be
+a)	*1/9 F
+b)	1/3 F
+c)	2 F
+d)	4 F
+
+13.	Question 13
+A radio operating at 3.0 volts and a constant temperature draws a current of 1.8 × 10−4 ampere. What is the resistance of the radio circuit?
+a)	*1.7 × 104 Ω
+b)	3.0 × 101 Ω
+c)	5.4 × 10−4 Ω
+d)	6.0 × 10−5 Ω
+
+14.	Question 14
+Which energy transformation occurs in an operating electric motor?
+a)	*electrical into mechanical
+b)	mechanical into electrical
+c)	chemical into electrical
+d)	electrical into chemical
+
+15.	Question 15
+A block slides across a rough, horizontal tabletop. As the block comes to rest, there is an increase in the block-tabletop system’s
+a)	gravitational potential energy
+b)	elastic potential energy
+c)	kinetic energy
+d)	*internal (thermal) energy
+
+16.	Question 16
+How much work is required to move an electron through a potential difference of 3.00 volts?
+a)	5.33 × 10–20 J
+b)	*4.80 × 10–19 J
+c)	3.00 J
+d)	1.88 × 1019 J
+
+
+
+17.	Question 17
+During a laboratory experiment, a student finds that at 20° Celsius, a 6.0-meter length of copper wire has a resistance of 1.3 ohms. The cross sectional area of this wire is
+a)	*7.9 × 10−8 m2
+b)	1.1 × 10−7 m2
+c)	4.6 × 100 m2
+d)	1.3 × 107 m2
+
+18.	Question 18
+A net charge of 5.0 coulombs passes a point on a conductor in 0.050 second. The average current is
+a)	8.0 × 10−8 A
+b)	1.0 × 10−2 A
+c)	2.5 × 10−1 A
+d)	*1.0 × 102 A
+
+19.	Question 19
+If several resistors are connected in series in an electric circuit, the potential difference across each resistor
+a)	*varies directly with its resistance
+b)	varies inversely with its resistance
+c)	varies inversely with the square of its resistance
+d)	is independent of its resistance
+
+20.	Question 20
+The amplitude of a sound wave is most closely related to the sound’s
+a)	speed
+b)	wavelength
+c)	*loudness
+d)	pitch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+21.	Question 21
+A duck floating on a lake oscillates up and down 5.0 times during a 10.-second interval as a periodic wave passes by. What is the frequency of the duck’s oscillations?
+a)	0.10 Hz
+b)	*0.50 Hz
+c)	2.0 Hz
+d)	50. Hz
+
+22.	Question 22
+Which diagram (see figure 2 on your picture sheet) best represents the position of a ball, at equal time intervals, as it falls freely from rest near Earth’s surface?
+
+
+
+a)	diagram 1
+b)	*diagram 2
+c)	diagram 3
+d)	diagram 4
+
+23.	Question 23
+A gamma ray and a microwave traveling in a vacuum have the same
+a)	frequency
+b)	period
+c)	*speed
+d)	Wavelength
+
+24.	Question 24
+A student produces a wave in a long spring by vibrating its end. As the frequency of the vibration is doubled, the wavelength in the spring is
+a)	quartered
+b)	*halved
+c)	unchanged
+d)	doubled
+
+
+
+
+
+
+
+25.	Question 25
+Which two points on the wave shown in diagram 3 of your picture sheet below are in phase with each other?
+
+a)	A and B
+b)	A and E
+c)	B and C
+d)	*B and D
+
+26.	Question 26
+As a longitudinal wave moves through a medium, the particles of the medium
+a)	*vibrate parallel to the direction of the wave’s propagation
+b)	vibrate perpendicular to the direction of the wave’s propagation
+c)	are transferred in the direction of the wave’s motion, only
+d)	are stationary
+
+27.	Question 27
+Wind blowing across suspended power lines may cause the power lines to vibrate at their natural frequency. This often produces audible sound waves. This phenomenon, often called an Aeolian harp, is an example of
+a)	diffraction
+b)	the Doppler effect
+c)	refraction
+d)	*resonance
+
+28.	Question 28
+A student listens to music from a speaker in an adjoining room, as represented in the diagram 4 of your picture sheet.  She notices that she does not have to be directly in front of the doorway to hear the music. This spreading of sound waves beyond the doorway is an example of
+
+
+
+a)	the Doppler effect
+b)	resonance
+c)	refraction
+d)	*diffraction
+
+29.	Question 29
+What is the minimum energy required to ionize a hydrogen atom in the n = 3 state?
+a)	0.00 eV
+b)	0.66 eV
+c)	*1.51 eV
+d)	12.09 eV
+
+30.	Question 30
+Diagram 5 on your picture sheet represents two small, charged, identical metal spheres, A and B that are separated by a distance of 2.0 meters.  What is the magnitude of the electrostatic force exerted by sphere A on sphere B?
+
+
+
+a)	7.2 × 10−3 N
+b)	*3.6 × 10−3 N
+c)	8.0 × 10−13 N
+d)	4.0 × 10−13 N
+
+31.	Question 31
+Diagram 5 on your picture sheet represents two small, charged, identical metal spheres, A and B that are separated by a distance of 2.0 meters.  If the two spheres were touched together and then separated, the charge on sphere A would be
+
+
+
+a)	*−3.0 × 10−7 C
+b)	−6.0 × 10−7 C
+c)	−1.3 × 10−6 C
+d)	−2.6 × 10−6 C
+
+
+
+
+
+
+
+
+
+
+
+32.	Question 32
+The horn of a moving vehicle produces a sound of constant frequency. Two stationary observers, A and C, and the vehicle’s driver, B, positioned as represented in diagram 6 of your picture sheet, hear the sound of the horn.  Compared to the frequency of the sound of the horn heard by driver B, the frequency heard by observer A is
+
+
+a)	lower and the frequency heard by observer C is lower
+b)	*lower and the frequency heard by observer C is higher
+c)	higher and the frequency heard by observer C is lower
+d)	higher and the frequency heard by observer C is higher
+
+33.	Question 33
+A different force is applied to each of four different blocks on a frictionless, horizontal surface. In which diagram (see figure 7 of your picture sheet) does the block have the greatest inertia 2.0 seconds after starting from rest?
+
+
+
+a)	diagram 1
+b)	diagram 2
+c)	diagram 3
+d)	*diagram 4
+
+
+
+
+
+
+
+
+
+
+
+
+34.	Question 34
+Diagram 8 of your picture sheet shows a ray of monochromatic light incident on a boundary between air and glass.  Which ray best represents the path of the reflected light ray?
+
+a)	A
+b)	B
+c)	C
+d)	D
+
+35.	Question 35
+Two pulses approach each other in the same medium. The diagram (see figure 9 of your picture sheet) represents the displacements caused by each pulse. Which diagram (see figure 10 of your picture sheet) best represents the resultant displacement of the medium as the pulses pass through each other?
+
+
+
+
+a)	diagram 1
+b)	*diagram 2
+c)	diagram 3
+d)	diagram 4
+
+36.	Question 36
+The diameter of an automobile tire is closest to
+a)	10−2 m
+b)	*100 m
+c)	101 m
+d)	102 m
+
+37.	Question 37
+The vector diagram (see figure 11 of your picture sheet) represents the velocity of a car traveling 24 meters per second 35° east of north.  What is the magnitude of the component of the car’s velocity that is directed eastward?
+
+
+
+a)	*14 m/s
+b)	20. m/s
+c)	29 m/s
+d)	42 m/s
+
+38.	Question 38
+Without air resistance, a kicked ball would reach a maximum height of 6.7 meters and land 38 meters away. With air resistance, the ball would travel
+a)	6.7 m vertically and more than 38 m horizontally
+b)	38 m horizontally and less than 6.7 m vertically
+c)	more than 6.7 m vertically and less than 38 m horizontally
+d)	*less than 38 m horizontally and less than 6.7 m vertically
+
+39.	Question 39
+A car is moving with a constant speed of 20. meters per second. What total distance does the car travel in 2.0 minutes?
+a)	10. m
+b)	40. m
+c)	1200 m
+d)	*2400 m
+
+40.	Question 40
+A car, initially traveling at 15 meters per second north, accelerates to 25 meters per second north in 4.0 seconds. The magnitude of the average acceleration is
+a)	*2.5 m/s2
+b)	6.3 m/s2
+c)	10. m/s2
+d)	20. m/s2
+
+
+
+
+
+
+41.	Question 41
+An object is in equilibrium. Which force vector diagram could represent the force(s) acting on the object?
+
+
+
+a)	diagram 1
+b)	diagram 2
+c)	diagram 3
+d)	*diagram 4
+
+42.	Question 42
+Which combination of fundamental units can be used to express the amount of work done on an object?
+a)	kg•m/s
+b)	kg•m/s2
+c)	*kg•m2/s2
+d)	kg•m2/s3
+
+
+
+
+
+43.	Question 43
+Which graph best represents the relationship between the potential energy stored in a spring and the change in the spring’s length from its equilibrium position?
+
+
+
+a)	*diagram 1
+b)	diagram 2
+c)	diagram 3
+d)	diagram 4
+
+44.	Question 44
+An electric motor has a rating of 4.0 × 102 watts.  How much time will it take for this motor to lift a 50.-kilogram mass a vertical distance of 8.0 meters?  [Assume 100% efficiency.]
+a)	0.98 s
+b)	*9.8 s
+c)	98 s
+d)	980 s
+
+45.	Question 45
+A compressed spring in a toy is used to launch a 5.00-gram ball. If the ball leaves the toy with an initial horizontal speed of 5.00 meters per second, the minimum amount of potential energy stored in the compressed spring was
+a)	0.0125 J
+b)	0.0250 J
+c)	*0.0625 J
+d)	0.125 J
+
+46.	Question 46
+A ray of yellow light (f = 5.09 × 1014 Hz) travels at a speed of 2.04 × 108 meters per second in
+a)	ethyl alcohol
+b)	water
+c)	Lucite
+d)	*glycerol
+
+47.	Question 47
+A blue-light photon has a wavelength of 4.80 × 10−7 meter. What is the energy of the photon?
+a)	1.86 × 1022 J
+b)	1.44 × 102 J
+c)	*4.14 × 10−19 J
+d)	3.18 × 10−26 J
+
+48.	Question 48
+The graph below represents the relationship between the force exerted on an elevator and the distance the elevator is lifted.  How much total work is done by the force in lifting the elevator from 0.0 m to 9.0 m?
+
+
+a)	9.0 × 104 J
+b)	1.2 × 105 J
+c)	*1.5 × 105 J
+d)	1.8 × 105 J
+
+49.	Question 49
+The diagram below shows waves A and B in the same medium.  Compared to wave A, wave B has
+
+a)	twice the amplitude and twice the wavelength
+b)	*twice the amplitude and half the wavelength
+c)	the same amplitude and half the wavelength
+d)	half the amplitude and the same wavelength
+
+50.	Question 50
+What is the quark composition of a proton?
+a)	*uud
+b)	udd
+c)	csb
+d)	uds
+
+51.	Question 51
+Calculate the minimum power output of an electric motor that lifts a 1.30 × 104-newton elevator car vertically upward at a constant speed of 1.50 meters per second.
+a)	8670 joules
+b)	8670 watts
+c)	19,500 joules
+d)	*19,500 watts
+
+52.	Question 52
+A microwave oven emits a microwave with a wavelength of 2.00 × 10−2 meter in air. Calculate the frequency of the microwave.
+a)	1.50 × 106 Hz
+b)	*1.50 × 1010 Hz
+c)	1.90 × 106 Hz
+d)	1.9 × 1010 Hz
+
+53.	Question 53
+Calculate the energy equivalent in joules of the mass of a proton.
+a)	*1.50 × 10−10 J
+b)	1.60 × 10−19 J
+c)	9.31 × 102 J
+d)	9.00 × 1016 J
+
+54.	Question 54
+A 1.5 × 103-kilogram car is driven at a constant speed of 12 meters per second counterclockwise around a horizontal circular track having a radius of 50. meters, as represented below.
+
+
+In what direction does the velocity vector point?
+a)	right
+b)	*left
+c)	up
+d)	down
+
+55.	Question 55
+Calculate the magnitude of the centripetal acceleration of the car of question 54.
+a)	*2.9 m/s2
+b)	4350 m/s2
+c)	1.7 m/s2
+d)	0.24 m/s2
+56.	Question 56
+A football is thrown at an angle of 30.° above the horizontal. The magnitude of the horizontal component of the ball’s initial velocity is 13.0 meters per second. The magnitude of the vertical component of the ball’s initial velocity is 7.5 meters per second. [Neglect friction.]
+A graph is drawn with the horizontal displacement on the y-axis and the time the football is in the air on the x-axis.  The shape of this graph will be a
+a)	parabola
+b)	ellipse
+c)	*diagonal line
+d)	horizontal line
+
+57.	Question 57
+The football of question 56 is caught at the same height from which it is thrown. Calculate the total time the football was in the air.
+a)	0.75 s
+b)	*1.5 s
+c)	2.0 s
+d)	4.2 s
+
+58.	Question 58
+A ray of light ( f = 5.09 × 1014 Hz) traveling through a block of an unknown material, passes at an angle of incidence of 30.° into air, as shown in the diagram below.
+
+
+
+Use a protractor to determine the angle of refraction of the light ray as it passes from the unknown material into air.
+a)	34°
+b)	66°
+c)	*56°
+d)	44°
+
+59.	Question 59
+Calculate the index of refraction of the unknown material of question 58.
+a)	1.3
+b)	1.5
+c)	*1.7
+d)	1.9
+60.	Question 60
+The diagram below represents a 4.0-newton force applied to a 0.200-kilogram copper block sliding to the right on a horizontal steel table.
+
+Determine the weight of the block.
+a)	*1.96 N
+b)	0.200 N
+c)	4.0 N
+d)	9.80 N
+
+61.	Question 61
+Calculate the magnitude of the force of friction acting on the moving block of question 60.
+a)	1.04 N
+b)	*0.71 N
+c)	4.0 N
+d)	1.96 N
+
+62.	Question 62
+Determine the magnitude of the net force acting on the moving block of question 60.
+a)	4.0 N
+b)	1.96 N
+c)	7.71 N
+d)	*3.29 N
+
+63.	Question 63
+Describe what happens to the magnitude of the velocity of the block of question 62 as the block slides across the table.
+a)	the block moves at constant speed
+b)	the block slows down
+c)	the block stops
+d)	*the block speeds up
+
+
+
+
+
+
+
+
+
+
+
+
+64.	Question 64
+Two conducting parallel plates 5.0 × 10−3 meter apart are charged with a 12-volt potential difference. An electron is located midway between the plates. The magnitude of the electrostatic force on the electron is 3.8 × 10−16 newton.  See the diagram below.  In what direction is the electric field in the space between the plates?
+
+a)	to the left
+b)	to the right
+c)	*downwards
+d)	upwards
+
+65.	Question 65
+Identify the direction of the electrostatic force that the electric field exerts on the electron of question 64.
+a)	to the left
+b)	to the right
+c)	downwards
+d)	*upwards
+
+66.	Question 66
+Calculate the magnitude of the electric field strength between the plates, in newtons per coulomb.
+a)	*2,400 N/C
+b)	15,800 N/C
+c)	1,200 N/C
+d)	840 N/C
+
+67.	Question 67
+Describe what happens to the magnitude of the net electrostatic force on the electron as the electron is moved toward the positive plate.
+a)	*the force remains the same
+b)	the force increases
+c)	the force decreases
+d)	the force is zero
+
+
+
+
+
+
+
+
+
+
+68.	Question 68
+An electron in a mercury atom changes from energy level b to a higher energy level when the atom absorbs a single photon with an energy of 3.06 electronvolts.  Determine the letter that identifies the energy level to which the electron jumped when the mercury atom absorbed the photon.
+a)	c
+b)	d
+c)	e
+d)	*f
+
+69.	Question 69
+Determine the energy of the photon of question 68, in joules.
+a)	1.6 × 10−19 J
+b)	*4.9 × 10−19 J
+c)	6.3 × 10−19 J
+d)	2.8 × 10−19 J
+
+70.	Question 70
+Calculate the frequency of the photon of question 68.
+a)	6.89 × 1014 Hz
+b)	*7.39 × 1014 Hz
+c)	8.09 × 1014 Hz
+d)	9.43 × 1014 Hz
+
+71.	Question 71
+Classify the photon as one of the types of electromagnetic radiation listed in the electromagnetic spectrum.
+a)	infrared
+b)	red
+c)	*violet
+d)	ultraviolet
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+72.	Question 72
+Three lamps are connected in parallel to a 120.-volt source of potential difference, as represented below.
+
+
+
+Calculate the resistance of the 40.-watt lamp.
+a)	*360-ohms
+b)	30-ohms
+c)	0.33-ohms
+d)	240-ohms
+
+73.	Question 73
+Describe what change, if any, would occur in the power dissipated by the 100.-watt lamp of question 72 if the 60.-watt lamp were to burn out.
+a)	the power dissipated by the 100. -watt lamp would increase
+b)	the power dissipated by the 100. -watt lamp would decrease
+c)	*the power dissipated by the 100. -watt lamp would remain the same
+d)	choose this answer if you would like to get the question wrong
+
+74.	Question 74
+Describe what change, if any, would occur in the equivalent resistance of the circuit if the 60.-watt lamp of question 72 were to burn out.
+a)	*the equivalent resistance would increase
+b)	the equivalent resistance would decrease
+c)	the equivalent resistance would remain the same
+d)	choose me if you want to get the answer wrong
+
+75.	Question 75
+The circuit of question 72 is disassembled. The same three lamps are then connected in series with each other and the source. Compare the equivalent resistance of this series circuit to the equivalent resistance of the parallel circuit.
+a)	*the equivalent resistance of the series circuit would be greater
+b)	the equivalent resistance of the series circuit would be smaller
+c)	the equivalent resistance of the series circuit would be the same
+d)	I haven’t a clue, and I want to get this question wrong
+
+
+
+
+
+Regents Competition
+
+	Separate into groups shown by teacher.
+	Everyone should have a reference table, calculator and scrap paper ready.
+	Choose a captain for your team.  The captain needs to have a smartphone or pick up a computer and be able to log into Jupiter, choose “Tests and Lessons”, and read the questions to the group.
+	The competition will have a time limit so it is suggested you skip the tougher, mathematical questions.  The Juno program will come back to the ones you skipped at the end.
+	If you are using a smartphone, choose the “text only” version and use the sheets that follow for the images.  If using the computer, choose the regular version; the images will be there.
+	Every group has the questions in a different order.  The question number shown is the original question number.
+
+
+Picture Sheet:
+
+Figure 1
+ 	Figure 2
+
+
+Figure 3
+ 	Figure 4
+
+
+
+Figure 5
+
+Figure 6
+
+
+Figure 7
+ 	Figure 8
+
+Figure 9
+ 	Figure 10
+
+
+
+
+
+Figure 11
+ 	Figure 12
+
+Figure 13
+ 	Figure 14
+
+Figure 15
+ 	Figure 16
+
+Figure 17
+ 	Figure 18
+
+Figure 19
+
+
+
+Figure 20

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+
+  <body>
+
+    <div class="top">
+      <h1>Mr. Uziel's Physics Game Page</h1>
+    </div>
+
+    <div class="nav">
+      <a href="{{ url_for('index') }}">home</a>
+      <a href="{{ url_for('teacher') }}">teacher</a>
+      <a href="{{ url_for('login') }}">login</a>
+      <a href="{{ url_for('logout') }}">logout</a>
+    </div>
+
+    <div>USER: {% if user %}{{ user.name }}{% endif %}</div>
+
+    <div class="rest">
+      {% block body %}
+      {% endblock %}
+    </div>
+
+  </body>
+
+</html>
