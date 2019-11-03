@@ -67,7 +67,7 @@
   <h4>Choose a game:</h4>
   <ul>
     {% for game in games %}
-      <li><a href="{{ url_for('game', teacher='uziel', game_name=game.game_name) }}">{{ game.game_name }}</a></li>
+      <li><a href="{{ url_for('game_control', teacher='uziel', game_name=game.game_name) }}">{{ game.game_name }}</a></li>
    {% endfor %}
   </ul>
 

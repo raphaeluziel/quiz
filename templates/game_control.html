@@ -8,7 +8,31 @@
 
   <h1>{{ game.game_name }}</h1>
 
+
+    <b>{{ user.name }}</b>
+
+  <br>
+  <button id="submit_message" class="btn btn-success">SEND Question</button>
+  <br><br>
   <p id="message_received">Mess received?  NO!</p>
+
+  <ol>
+    {% for question in questions %}
+      <li>
+        (<em>Question ID: {{ question.question_id }}</em>) <br>
+        <div class="question_in_play">
+          {{ question.question}} <br>
+          A) {{ question.choice_a }} <br>
+          B) {{ question.choice_b }} <br>
+          C) {{ question.choice_c }} <br>
+          D) {{ question.choice_d }} <br>
+          Correct Answer: <strong>{{ question.answer }}</strong> <hr>
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+
+  <hr><hr>
 
   <h4>{{ result }}</h4>
   <h4>Next question:</h4>
@@ -19,7 +43,7 @@
   <form action="" method="post">
     <div class="form-check">
       <input class="form-check-input" type="radio" name="submitted_answer" value="A" required>
-      <label id="label_a" class="form-check-label"></label>
+      <label class="form-check-label">{{ question.choice_a }}</label>
     </div>
     <div class="form-check">
       <input class="form-check-input" type="radio" name="submitted_answer" value="B" required>
@@ -39,6 +63,6 @@
   </form>
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-  <script type="text/javascript" src="/static/game.js"></script>
+  <script type="text/javascript" src="/static/game_control.js"></script>
 
 {% endblock %}
