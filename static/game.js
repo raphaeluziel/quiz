@@ -13,6 +13,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.querySelector('#label_a').innerHTML = data.choice_a;
 
+      var answers = document.getElementById("answers");
+
+      var question = document.createElement("div");
+      question.innerHTML = data.question;
+      answers.appendChild(question);
+
+      var label = document.createElement("label");
+      var radio = document.createElement("input");
+
+      radio.type = "radio";
+      radio.name = "submitted_answer";
+      radio.value = "A";
+
+      label.appendChild(radio);
+
+      label.appendChild(document.createTextNode(data.choice_a));
+
+      answers.appendChild(label)
 
 
     });
