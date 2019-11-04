@@ -50,7 +50,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/logins", methods=["GET", "POST"])
 def login():
 
     """Log user in"""
@@ -194,29 +194,17 @@ def game(teacher, game_name):
 
     game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":"uziel"}).fetchone()
 
-    question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
-
     if request.method == 'POST':
-        question_number = game.question_list.index(int(request.form.get("question_number")))
-        question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
+        print(request.form)
+        question_number = int(request.form.get("question_number"))
+        question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number - 1]}).fetchone()
+        print(question)
         if request.form.get("submitted_answer") == question.answer:
             result = "Correct!!!"
         else:
             result = "Sorry!"
-        question_number = game.question_list.index(int(request.form.get("question_number"))) + 1
 
-    question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
-
-    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
-
-    #user = db.execute("SELECT * FROM users WHERE username = :username", {"username": "raphaeluziel"}).fetchone()
-    #print(user)
-    try:
-        user = db.execute("SELECT * FROM users WHERE user_id = :userid", {"userid": session["userid"]}).fetchone()
-    except:
-        user = None
-
-    return render_template("game.html", game=game, question=question, questions=questions, result=result, user=user)
+    return render_template("game.html", game=game, question=question, result=result)
 
 @app.route("/game_control/<string:teacher>/<string:game_name>", methods=["GET", "POST"])
 def game_control(teacher, game_name):
@@ -257,6 +245,7 @@ def message(data):
     print(data)
     question = db.execute("SELECT * FROM questions WHERE question_id = 1").fetchone()
     message = {
+        "question_id": question.question_id,
         "question": question.question,
         "choice_a": question.choice_a,
         "choice_b": question.choice_b,
