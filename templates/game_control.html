@@ -8,61 +8,59 @@
 
   <h1>{{ game.game_name }}</h1>
 
-
-    <b>{{ user.name }}</b>
+  <b>{{ teacher.name }}</b>
 
   <br>
   <button id="submit_message" class="btn btn-success">SEND Question</button>
   <br><br>
   <p id="message_received">Mess received?  NO!</p>
 
-  <ol>
+  <ol id="upcoming_questions">
     {% for question in questions %}
       <li>
         (<em>Question ID: {{ question.question_id }}</em>) <br>
-        <div class="question_in_play">
+        <div id="question{{ question.id }}" class="question_in_play">
           {{ question.question}} <br>
           A) {{ question.choice_a }} <br>
           B) {{ question.choice_b }} <br>
           C) {{ question.choice_c }} <br>
           D) {{ question.choice_d }} <br>
-          Correct Answer: <strong>{{ question.answer }}</strong> <hr>
+          Correct Answer: <strong>{{ question.answer }}</strong>
         </div>
       </li>
+      <hr>
     {% endfor %}
   </ol>
 
-  <hr><hr>
 
-  <h4>{{ result }}</h4>
-  <h4>Next question:</h4>
+  <div class="accordion" id="accordionExample">
+    {% for question in questions %}
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              {{ question.question }}
+            </button>
+          </h5>
+        </div>
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div id="question{{ question.id }}" class="card-body question_in_play">
+              {{ question.question}} <br>
+              A) {{ question.choice_a }} <br>
+              B) {{ question.choice_b }} <br>
+              C) {{ question.choice_c }} <br>
+              D) {{ question.choice_d }} <br>
+              Correct Answer: <strong>{{ question.answer }}</strong>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 
-  {{ question.question }}
-  <br>
+  <!-- needed to get information into game_control.js -->
+  <div id="game_id" hidden>{{ game.game_id}}</div>
+  <div id="teacher_id" hidden>{{ teacher.teacher_id}}</div>
 
-  <form action="" method="post">
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="submitted_answer" value="A" required>
-      <label class="form-check-label">{{ question.choice_a }}</label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="submitted_answer" value="B" required>
-      <label class="form-check-label">{{ question.choice_b }}</label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="submitted_answer" value="C" required>
-      <label class="form-check-label">{{ question.choice_c }}</label>
-    </div>
-    <div class="form-check">
-      <input class="form-check-input" type="radio" name="submitted_answer" value="D" required>
-      <label class="form-check-label">{{ question.choice_d }}</label>
-    </div>
-    <input type="hidden" name="question_number" value="{{ question.question_id }}">
-    <br>
-    <button type="submit" class="btn btn-primary">Submit Answer</button>
-  </form>
-
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
   <script type="text/javascript" src="/static/game_control.js"></script>
 
 {% endblock %}

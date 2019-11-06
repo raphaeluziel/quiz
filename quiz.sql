@@ -1,12 +1,21 @@
+CREATE TABLE teachers (
+  teacher_id SERIAL PRIMARY KEY,
+  name VARCHAR NOT NULL,
+  username VARCHAR NOT NULL UNIQUE,
+  email VARCHAR NOT NULL UNIQUE,
+  hash VARCHAR NOT NULL
+);
+
 CREATE TABLE games (
   game_id SERIAL PRIMARY KEY,
-  teacher VARCHAR NOT NULL,
+  teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
   game_name VARCHAR NOT NULL,
   question_list INTEGER []
 );
 
 CREATE TABLE questions (
   question_id SERIAL PRIMARY KEY,
+  teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
   question VARCHAR NOT NULL UNIQUE,
   choice_a VARCHAR NOT NULL,
   choice_b VARCHAR NOT NULL,
@@ -22,12 +31,4 @@ CREATE TABLE answers (
   student VARCHAR NOT NULL DEFAULT 'Rachel',
   submitted_answer VARCHAR NOT NULL,
   correct BOOLEAN
-);
-
-CREATE TABLE users (
-  user_id SERIAL PRIMARY KEY,
-  name VARCHAR NOT NULL,
-  username VARCHAR NOT NULL UNIQUE,
-  email VARCHAR NOT NULL UNIQUE,
-  hash VARCHAR NOT NULL
 );

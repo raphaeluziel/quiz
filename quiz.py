@@ -1,25 +1,24 @@
 import os
+import json
 import requests
 
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify
 from flask_session import Session
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
-
 from functools import wraps
-
-# This looks for secret stuff in a .env file
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 app = Flask(__name__)
 
 # Check for environment variable
 if not os.getenv("QUIZDB_URL"):
     raise RuntimeError("QUIZDB_URL is not set")
 
+# Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -30,17 +29,6 @@ socketio = SocketIO(app)
 engine = create_engine(os.getenv("QUIZDB_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-def login_required(f):
-    """
-    Decorate routes to require login.
-    http://flask.pocoo.org/docs/0.12/patterns/viewdecorators/
-    """
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if session.get("userid") is None:
-            return redirect("/login")
-        return f(*args, **kwargs)
-    return decorated_function
 
 @app.route("/")
 def index():
@@ -50,7 +38,23 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/logins", methods=["GET", "POST"])
+
+""" ***********************TEACHER LOGIN SECTION ************************** """
+
+def login_required(f):
+    """
+    Decorate routes to require login.
+    http://flask.pocoo.org/docs/0.12/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("teacher_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
 
     """Log user in"""
@@ -70,21 +74,21 @@ def login():
             return render_template("login.html", message=message)
 
         # Query database for user
-        user = db.execute("SELECT * FROM users WHERE username = :username",
+        teacher = db.execute("SELECT * FROM teachers WHERE username = :username",
             {"username":request.form.get("username")}).fetchone()
 
         # Is username in database?
-        if not user:
+        if not teacher:
             message = "username does not exist"
             return  render_template("login.html", message=message)
 
         # Does password match username?
-        if not check_password_hash(user.hash, request.form.get("password")):
+        if not check_password_hash(teacher.hash, request.form.get("password")):
             message = "password does not match username"
             return  render_template("login.html", message=message)
 
         # Remember user who logged in
-        session["userid"] = user.user_id
+        session["teacher_id"] = teacher.teacher_id
 
         # Begin searching for books
         return redirect("/teacher")
@@ -130,7 +134,7 @@ def register():
 
     # Add user to database, unless user already exists
     try:
-        db.execute("INSERT INTO users (name, username, email, hash) VALUES (:name, :username, :email, :hash)",
+        db.execute("INSERT INTO teachers (name, username, email, hash) VALUES (:name, :username, :email, :hash)",
             {"name":request.form.get("name"), "username":request.form.get("username"),
             "email":request.form.get("email"), "hash":hash})
         db.commit()
@@ -139,111 +143,177 @@ def register():
         return render_template("login.html", message=message)
 
     # Log user in automatically after registering
-    user = db.execute("SELECT * FROM users WHERE username = :username", {"username": request.form.get("username")}).fetchone()
-    session["userid"] = user.user_id
+    teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username": request.form.get("username")}).fetchone()
+    session["teacher_id"] = teacher.teacher_id
 
     # All is good, let user start searching for books
     return redirect('/teacher')
 
 
+
+""" *********************** GAME CREATION SECTION ************************** """
+
 @app.route("/create_new_game", methods=["POST"])
 def create_new_game():
 
+    """ Create a new game by supplying it's name, and a list of questions"""
+
+    # List of questions chosen for a particular game
     question_list = []
 
+    # Add all questions user chooses in form to this list
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
+    # Insert list into database
     db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
-               {"teacher":"uziel", "game_name":request.form.get("game_name"), "question_list":question_list})
+               {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
     db.commit()
-    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":request.form.get("game_name")}).fetchone()
 
     return redirect("/teacher")
 
 @app.route("/add_new_question", methods=["POST"])
 def add_new_question():
-    db.execute("INSERT INTO questions (question, choice_a, choice_b, choice_c, choice_d, answer) \
-               VALUES (:question, :choice_a, :choice_b, :choice_c, :choice_d, :answer)",
-               {"question":request.form.get("question"),
+    """ Add new question to database which can be used in any game """
+
+    # Insert question into database
+    db.execute("INSERT INTO questions (teacher, question, choice_a, choice_b, choice_c, choice_d, answer) \
+               VALUES (:teacher, :question, :choice_a, :choice_b, :choice_c, :choice_d, :answer)",
+               {"teacher":session["teacher_id"],
+               "question":request.form.get("question"),
                "choice_a":request.form.get("choice_a"),
                "choice_b":request.form.get("choice_b"),
                "choice_c":request.form.get("choice_c"),
                "choice_d":request.form.get("choice_d"),
                "answer":request.form.get("answer")})
     db.commit()
+
     return redirect("/teacher")
 
 @app.route("/teacher")
 @login_required
 def teacher():
-    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPP")
-    print(session["userid"])
-    questions = db.execute("SELECT * FROM questions").fetchall()
-    games = db.execute("SELECT * FROM games").fetchall()
-    # Get user information to send back to the search page
-    user = db.execute("SELECT * FROM users WHERE user_id = :userid", {"userid": session["userid"]}).fetchone()
-    return render_template("teacher.html", questions=questions, games=games, user=user)
 
-@app.route("/game/<string:teacher>/<string:game_name>", methods=["GET", "POST"])
-def game(teacher, game_name):
+    """ This is the main page for the teacher to create games, add questions """
 
-    result = ""
-    correct = False
-    question_number = 0
+    # Get user information to welcome teacher to their page
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session["teacher_id"]}).fetchone()
 
-    game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":"uziel"}).fetchone()
+    # Get all questions in database for teacher to choose from
+    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher", {"teacher": session["teacher_id"]}).fetchall()
 
-    if request.method == 'POST':
-        print(request.form)
-        question_number = int(request.form.get("question_number"))
-        question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number - 1]}).fetchone()
-        print(question)
-        if request.form.get("submitted_answer") == question.answer:
-            result = "Correct!!!"
-        else:
-            result = "Sorry!"
+    # Show all games created by teacher
+    games = db.execute("SELECT * FROM games WHERE teacher = :teacher", {"teacher": session["teacher_id"]}).fetchall()
 
-    return render_template("game.html", game=game, question=question, result=result)
+    return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
+
+
+""" *************************** STUDENT VIEW ****************************** """
+
+@app.route("/student")
+def student():
+
+    """ This is the main page for the student to create username and start play """
+
+    # Get a list of all teachers for student to choose from
+    teachers = db.execute("SELECT * FROM teachers").fetchall()
+
+    return render_template("student.html", teachers=teachers)
+
+
+@app.route("/add_new_student", methods=["POST"])
+def add_new_student():
+    """ Add new student """
+
+    session["student"] = request.form.get("student")
+
+    game_url = "/game/" + request.form.get("teacher")
+
+    return redirect(game_url)
+
+
+# Return a json object of all the teachers in the database (for typeahead use)
+@app.route("/teacherAPI")
+def teacherAPI():
+    teacher_list = []
+    teachers = db.execute("SELECT username FROM teachers").fetchall()
+    for x in teachers:
+        teacher_list.append(x.username)
+    teacherJSON = jsonify(teacher_list)
+    return teacherJSON
+
+
+
+""" *********************** GAME CONTROL AND PLAY ************************** """
 
 @app.route("/game_control/<string:teacher>/<string:game_name>", methods=["GET", "POST"])
+@login_required
 def game_control(teacher, game_name):
+
+    """ This view is where the teacher controls the game and views the results """
 
     result = ""
     correct = False
     question_number = 0
 
-    game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":"uziel"}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session["teacher_id"]}).fetchone()
 
     question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
 
     if request.method == 'POST':
         question_number = game.question_list.index(int(request.form.get("question_number")))
         question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
+        question_number = game.question_list.index(int(request.form.get("question_number"))) + 1
+
+    question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
+    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session["teacher_id"]}).fetchone()
+
+    return render_template("game_control.html", game=game, question=question, questions=questions, result=result, teacher=teacher)
+
+
+@app.route("/game/<string:teacher>", methods=["GET", "POST"])
+def game(teacher):
+
+    """ This view controls what the student sees while playing the game"""
+
+    result = ""
+    correct = False
+    question_number = 0
+    question = None
+
+    if session.get("student") is None:
+        return redirect("/student")
+
+    # Students submits an answer through the form
+    if request.method == 'POST':
+
+        # Get the question student is answering from the form
+        question_number = int(request.form.get("question_number"))
+        question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":question_number}).fetchone()
+
+        # Did the student get the answer correct?
         if request.form.get("submitted_answer") == question.answer:
             result = "Correct!!!"
         else:
             result = "Sorry!"
-        question_number = game.question_list.index(int(request.form.get("question_number"))) + 1
 
-    question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
+    return render_template("game.html", question=question, result=result, student=session["student"], teacher=teacher)
 
-    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
 
-    #user = db.execute("SELECT * FROM users WHERE username = :username", {"username": "raphaeluziel"}).fetchone()
-    #print(user)
-    try:
-        user = db.execute("SELECT * FROM users WHERE user_id = :userid", {"userid": session["userid"]}).fetchone()
-    except:
-        user = None
 
-    return render_template("game_control.html", game=game, question=question, questions=questions, result=result, user=user)
+""" *************************** SOCKET SECTION ****************************** """
 
 # Server receives message sent by client
 @socketio.on("start game")
 def message(data):
-    print(data)
-    question = db.execute("SELECT * FROM questions WHERE question_id = 1").fetchone()
+
+    teacher = db.execute("SELECT username FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
+    question_number = data["question_number"]
+    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": int(data['game_id'])}).fetchone()
+    question_id = game.question_list[question_number]
+    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": question_id}).fetchone()
+
     message = {
         "question_id": question.question_id,
         "question": question.question,

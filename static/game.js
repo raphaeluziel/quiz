@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
           "<input class='form-check-input' type='radio' name='submitted_answer' value='D' required>" +
           "<label id='label_a' class='form-check-label'>" + data.choice_d + "</label>" +
         "</div>" +
-        "<input type='hidden' name='question_number' value='1'>" +
+        "<input type='hidden' name='question_number' value='" + data.question_id + "'>" +
         "<br>" +
         "<button type='submit' class='btn btn-primary'>Submit Answer</button>"
       "</form>";
