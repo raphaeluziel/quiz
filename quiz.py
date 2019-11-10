@@ -4,6 +4,7 @@ import requests
 
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify
 from flask_session import Session
+from datetime import timedelta
 from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -20,8 +21,9 @@ if not os.getenv("QUIZDB_URL"):
 
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=6)
 Session(app)
 socketio = SocketIO(app)
 
