@@ -1,12 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+  room_name = document.querySelector('#room_name').innerHTML;
+
   // Start the socket connection
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
-  socket.on('push question', data => {
+  socket.on('end game', function() {
+    console.log("CLIENT STUDENT RECEIVES SIGNAL FROM SERVER TO END THE GAME");
+    document.location.replace("/end");
+  });
 
-    console.log(data);
+  // Let server know which room (teacher username) the student is trying to join
+  socket.on('connect', function() {
+    socket.emit('join', {room: room_name});
+  });
 
+
+  // Listen for question sent from server
+  socket.on('question', data => {
+
+    // Create a form based on the question received by the server
     document.querySelector('#question_received').innerHTML =
       data.question +
       "<form action='' method='post'>" +
@@ -32,5 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
       "</form>";
 
     });
+
+  socket.on('end game', function() {
+    console.log("CLIENT STUDENT RECEIVES SIGNAL FROM SERVER TO END THE GAME");
+    document.location.replace("/end");
+  });
 
 });

@@ -4,7 +4,7 @@ import requests
 
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify
 from flask_session import Session
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -172,6 +172,7 @@ def create_new_game():
 
     return redirect("/teacher")
 
+
 @app.route("/add_new_question", methods=["POST"])
 def add_new_question():
     """ Add new question to database which can be used in any game """
@@ -189,6 +190,7 @@ def add_new_question():
     db.commit()
 
     return redirect("/teacher")
+
 
 @app.route("/teacher")
 @login_required
@@ -208,6 +210,7 @@ def teacher():
     return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
 
 
+
 """ *************************** STUDENT VIEW ****************************** """
 
 @app.route("/student")
@@ -225,8 +228,10 @@ def student():
 def add_new_student():
     """ Add new student """
 
+    # For now, the student is kept only temporarily in sessions
     session["student"] = request.form.get("student")
 
+    # Redirect to the game page and teacher room
     game_url = "/game/" + request.form.get("teacher")
 
     return redirect(game_url)
@@ -252,24 +257,12 @@ def game_control(teacher, game_name):
 
     """ This view is where the teacher controls the game and views the results """
 
-    result = ""
-    correct = False
-    question_number = 0
-
     game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session["teacher_id"]}).fetchone()
-
-    question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
-
-    if request.method == 'POST':
-        question_number = game.question_list.index(int(request.form.get("question_number")))
-        question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
-        question_number = game.question_list.index(int(request.form.get("question_number"))) + 1
-
-    question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":game.question_list[question_number]}).fetchone()
+    question = db.execute("SELECT * FROM questions").fetchone()
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session["teacher_id"]}).fetchone()
 
-    return render_template("game_control.html", game=game, question=question, questions=questions, result=result, teacher=teacher)
+    return render_template("game_control.html", game=game, question=question, questions=questions, teacher=teacher)
 
 
 @app.route("/game/<string:teacher>", methods=["GET", "POST"])
@@ -304,15 +297,21 @@ def game(teacher):
 
 """ *************************** SOCKET SECTION ****************************** """
 
-# Server receives message sent by client
-@socketio.on("start game")
+# Server receives question sent by client
+@socketio.on("play game")
 def message(data):
 
     teacher = db.execute("SELECT username FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
     question_number = data["question_number"]
     game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": int(data['game_id'])}).fetchone()
-    question_id = game.question_list[question_number]
-    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": question_id}).fetchone()
+    number_of_questions = len(game.question_list)
+
+    if question_number < number_of_questions:
+        question_id = game.question_list[question_number]
+        question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": question_id}).fetchone()
+    else:
+        emit('end game', room=teacher.username)
+        return
 
     message = {
         "question_id": question.question_id,
@@ -324,8 +323,22 @@ def message(data):
     }
 
     # Server sends client the data
-    emit("push question", message, broadcast=True)
+    emit("question", message, room=teacher.username)
 
+# Join a room
+@socketio.on("join")
+def message(data):
+    join_room(data["room"])
+
+
+""" **************************** END OF GAME ******************************* """
+
+@app.route("/end")
+def end_game():
+
+    """Render game over page"""
+
+    return render_template("end.html")
 
 
 if __name__ == "__main__":

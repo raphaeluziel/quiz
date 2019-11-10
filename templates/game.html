@@ -8,9 +8,11 @@
 
   <h1>Welcome, {{ student }}</h1>
 
-  <p>TEACHER: {{ teacher }}, STUDENT: {{ student }}</p>
+  <p>TEACHER: <span id="room_name">{{ teacher }}</span></p>
+  <p>STUDENT: {{ student }}</p>
+  <p id="result">{{ result }}</p>
 
-  <div id="question_received"><em>Please wait until {{ teacher }} begins the game.</em></div>
+  <div id="question_received"><em>Please wait until {{ teacher }} sends the next question.</em></div>
 
   <script type="text/javascript" src="/static/game.js"></script>
 

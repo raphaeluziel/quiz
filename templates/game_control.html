@@ -11,7 +11,7 @@
   <b>{{ teacher.name }}</b>
 
   <br>
-  <button id="submit_message" class="btn btn-success">SEND Question</button>
+  <button id="submit_question" class="btn btn-success">SEND Question</button>
   <br><br>
   <p id="message_received">Mess received?  NO!</p>
 
@@ -58,8 +58,9 @@
   </div>
 
   <!-- needed to get information into game_control.js -->
-  <div id="game_id" hidden>{{ game.game_id}}</div>
-  <div id="teacher_id" hidden>{{ teacher.teacher_id}}</div>
+  <div id="game_id" hidden>{{ game.game_id }}</div>
+  <div id="teacher_id" hidden>{{ teacher.teacher_id }}</div>
+  <div id="teacher_username" hidden>{{ teacher.username }}</div>
 
   <script type="text/javascript" src="/static/game_control.js"></script>
 
