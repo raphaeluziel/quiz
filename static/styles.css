@@ -1,10 +1,13 @@
 body {
   margin: 20px;
-  background-color: rgba(255, 99, 71, 0.7);
 }
 
-h1{
+h1, h2, h3, h4, h5, h6{
   text-align: center;
+}
+.error{
+  color: green;
+  font-size: 1.5em;
 }
 .form-check{
   margin-left: 20px;
@@ -17,12 +20,23 @@ h1{
   margin-left: 6px;
   padding: 3px 0;
 }
-.error{
-  color: green;
-  font-size: 1.5em;
+.game-questions{
+  cursor: pointer;
+  height: 1.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+div.game-questions:hover{
+  padding: 4px 10px;
+  border-radius: 4px;
+  background-color: #eef;
+  white-space: normal;
+  overflow: visible;
+  height: 100%;
 }
 .nav{
-  background-color: lightyellow;
+  background-color: #eef;
   max-width: 600px;
   margin: 20px auto;
   padding: 5px;
@@ -37,4 +51,9 @@ h1{
 }
 .nav a:hover{
   background: lightblue;
+}
+#active-question{
+  background-color: #d6f5cb;
+  padding: 4px;
+  border-radius: 4px;
 }

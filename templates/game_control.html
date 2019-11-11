@@ -6,20 +6,19 @@
 
 {% block body %}
 
-  <h1>{{ game.game_name }}</h1>
+  <h4>{{ teacher.name }}</h4>
+  <h5>Game: {{ game.game_name }}</h5>
 
-  <b>{{ teacher.name }}</b>
+  <strong>Question now in play:</strong>
+  <p id="active-question">No questions sent yet.</p>
 
-  <br>
-  <button id="submit_question" class="btn btn-success">SEND Question</button>
-  <br><br>
-  <p id="message_received">Mess received?  NO!</p>
+  <button id="submit_question" class="btn btn-block btn-primary">SEND Next Question</button><br>
 
+  <strong>Questions in the game:</strong>
   <ol id="upcoming_questions">
     {% for question in questions %}
       <li>
-        (<em>Question ID: {{ question.question_id }}</em>) <br>
-        <div id="question{{ question.id }}" class="question_in_play">
+        <div class="game-questions" id="question{{ question.id }}">
           {{ question.question}} <br>
           A) {{ question.choice_a }} <br>
           B) {{ question.choice_b }} <br>
@@ -28,34 +27,8 @@
           Correct Answer: <strong>{{ question.answer }}</strong>
         </div>
       </li>
-      <hr>
     {% endfor %}
   </ol>
-
-
-  <div class="accordion" id="accordionExample">
-    {% for question in questions %}
-      <div class="card">
-        <div class="card-header" id="headingOne">
-          <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              {{ question.question }}
-            </button>
-          </h5>
-        </div>
-        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-          <div id="question{{ question.id }}" class="card-body question_in_play">
-              {{ question.question}} <br>
-              A) {{ question.choice_a }} <br>
-              B) {{ question.choice_b }} <br>
-              C) {{ question.choice_c }} <br>
-              D) {{ question.choice_d }} <br>
-              Correct Answer: <strong>{{ question.answer }}</strong>
-          </div>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
 
   <!-- needed to get information into game_control.js -->
   <div id="game_id" hidden>{{ game.game_id }}</div>

@@ -233,6 +233,8 @@ def add_new_student():
     # For now, the student is kept only temporarily in sessions
     session["student"] = request.form.get("student")
 
+    print(session)
+
     # Redirect to the game page and teacher room
     game_url = "/game/" + request.form.get("teacher")
 
@@ -273,6 +275,7 @@ def game(teacher):
     """ This view controls what the student sees while playing the game"""
 
     result = ""
+    game = ""
     correct = False
     question_number = 0
     question = None
@@ -282,6 +285,9 @@ def game(teacher):
 
     # Students submits an answer through the form
     if request.method == 'POST':
+
+        # Get the name of the game to display
+        game = request.form.get("game_name")
 
         # Get the question student is answering from the form
         question_number = int(request.form.get("question_number"))
@@ -293,7 +299,7 @@ def game(teacher):
         else:
             result = "Sorry!"
 
-    return render_template("game.html", question=question, result=result, student=session["student"], teacher=teacher)
+    return render_template("game.html", question=question, result=result, student=session["student"], teacher=teacher, game=game)
 
 
 
@@ -321,7 +327,9 @@ def message(data):
         "choice_a": question.choice_a,
         "choice_b": question.choice_b,
         "choice_c": question.choice_c,
-        "choice_d": question.choice_d
+        "choice_d": question.choice_d,
+        "answer": question.answer,
+        "game": game.game_name
     }
 
     # Server sends client the data

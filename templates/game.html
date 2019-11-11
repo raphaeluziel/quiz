@@ -6,11 +6,14 @@
 
 {% block body %}
 
-  <h1>Welcome, {{ student }}</h1>
+  <h1>{{ student }}</h1>
 
-  <p>TEACHER: <span id="room_name">{{ teacher }}</span></p>
-  <p>STUDENT: {{ student }}</p>
-  <p id="result">{{ result }}</p>
+  <div>Teacher: <strong id="room_name">{{ teacher }}</strong></div>
+  <div>Game: <strong id="game_name">{{ game or 'not started yet' }}</strong></div>
+
+
+  <br>
+
 
   <div id="question_received"><em>Please wait until {{ teacher }} sends the next question.</em></div>
 
