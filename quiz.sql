@@ -6,9 +6,18 @@ CREATE TABLE teachers (
   hash VARCHAR NOT NULL
 );
 
+CREATE TABLE students (
+  student_id SERIAL PRIMARY KEY,
+  student_name VARCHAR NOT NULL UNIQUE,
+  questions_answered INTEGER [],
+  submitted_answer VARCHAR [],
+  result BOOLEAN []
+);
+
 CREATE TABLE games (
   game_id SERIAL PRIMARY KEY,
   teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
+  students INTEGER [],
   game_name VARCHAR NOT NULL,
   question_list INTEGER []
 );
@@ -22,13 +31,4 @@ CREATE TABLE questions (
   choice_c VARCHAR NOT NULL,
   choice_d VARCHAR NOT NULL,
   answer VARCHAR NOT NULL
-);
-
-CREATE TABLE answers (
-  answer_id SERIAL PRIMARY KEY,
-  answer INTEGER REFERENCES questions,
-  game_played INTEGER REFERENCES games ON DELETE CASCADE,
-  student VARCHAR NOT NULL DEFAULT 'Rachel',
-  submitted_answer VARCHAR NOT NULL,
-  correct BOOLEAN
 );

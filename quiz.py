@@ -230,10 +230,19 @@ def student():
 def add_new_student():
     """ Add new student """
 
-    # For now, the student is kept only temporarily in sessions
-    session["student"] = request.form.get("student")
-
-    print(session)
+    if session.get("student_id") is not None:
+        student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
+    else:
+        # Add student to database, unless student already exists
+        try:
+            db.execute("INSERT INTO students (student_name) VALUES (:student_name)",
+                {"student_name":request.form.get("student")})
+            db.commit()
+            # Log user in automatically after registering
+            student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
+            session["student_id"] = student.student_id
+        except:
+            return render_template("student.html", message="that name is already being used")
 
     # Redirect to the game page and teacher room
     game_url = "/game/" + request.form.get("teacher")
@@ -280,8 +289,10 @@ def game(teacher):
     question_number = 0
     question = None
 
-    if session.get("student") is None:
+    if session.get("student_id") is None:
         return redirect("/student")
+    else:
+        student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
     # Students submits an answer through the form
     if request.method == 'POST':
@@ -299,7 +310,7 @@ def game(teacher):
         else:
             result = "Sorry!"
 
-    return render_template("game.html", question=question, result=result, student=session["student"], teacher=teacher, game=game)
+    return render_template("game.html", question=question, result=result, student=student.student_name, teacher=teacher, game=game)
 
 
 
