@@ -306,9 +306,18 @@ def game(teacher):
 
         # Did the student get the answer correct?
         if request.form.get("submitted_answer") == question.answer:
-            result = "Correct!!!"
+            print("CORRECT")
+            db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answer = :submitted_answer \
+                        , result = :result) WHERE student_id = :student_id",
+                        {"student_id": student.student_id, "questions_answered": question.question_id,
+                        "submitted_answer": request.form.get('submitted_answer'), "result": True})
+            b.commit()
         else:
-            result = "Sorry!"
+            print("NOT CORRECT")
+            db.execute("UPDATE students SET questions_answered = :question_answered, submitted_answer = :submitted_answer, result = :result) WHERE student_id = :student_id",
+                        {"student_id": student.student_id, "questions_answered": question.question_id,
+                        "submitted_answer": request.form.get('submitted_answer'), "result": True})
+            db.commit()
 
     return render_template("game.html", question=question, result=result, student=student.student_name, teacher=teacher, game=game)
 
