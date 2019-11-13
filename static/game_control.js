@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
   socket.on('end game', function() {
-    document.location.replace("/end");
+    document.location.replace("/results");
   });
 
 });

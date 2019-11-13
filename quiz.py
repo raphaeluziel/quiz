@@ -371,12 +371,22 @@ def message(data):
 
 """ **************************** END OF GAME ******************************* """
 
+@app.route("/results")
+def results():
+
+    """Render game over page"""
+
+    return render_template("results.html")
+
+
 @app.route("/end")
 def end_game():
 
     """Render game over page"""
 
-    return render_template("end.html")
+    student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
+
+    return render_template("end.html", student=student)
 
 
 if __name__ == "__main__":

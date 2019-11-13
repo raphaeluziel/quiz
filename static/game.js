@@ -5,10 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Start the socket connection
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
-  socket.on('end game', function() {
-    document.location.replace("/end");
-  });
-
   // Let server know which room (teacher username) the student is trying to join
   socket.on('connect', function() {
     socket.emit('join', {room: room_name});

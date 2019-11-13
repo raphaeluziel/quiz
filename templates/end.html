@@ -8,5 +8,21 @@
 
   <h1>Game Over!</h1>
 
+  <h3>{{ student.student_name }}</h3>
+
+  <ol>
+    {% for answer in student.results %}
+    <li>
+      {% if answer %}
+        correct
+      {% else %}
+        wrong
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+
+
+
 
 {% endblock %}
