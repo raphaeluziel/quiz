@@ -6,16 +6,17 @@
 
 {% block body %}
 
-  <h1>{{ student }}</h1>
+  <h1>{{ student.student_name }}</h1>
 
   <div>Teacher: <strong id="room_name">{{ teacher }}</strong></div>
-  <div>Game: <strong id="game_name">{{ game or 'not started yet' }}</strong></div>
-
+  <div>Game: <strong id="game_name">{{ game.game_name or 'not started yet' }}</strong></div>
 
   <br>
 
-
   <div id="question_received"><em>Please wait until {{ teacher }} sends the next question.</em></div>
+
+  <!-- Needed to transmit inofrmation to game.js to send through sockets -->
+  <div id="student_id" hidden>{{ student.student_id }}</div>
 
   <script type="text/javascript" src="/static/game.js"></script>
 

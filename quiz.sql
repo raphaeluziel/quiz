@@ -9,15 +9,15 @@ CREATE TABLE teachers (
 CREATE TABLE students (
   student_id SERIAL PRIMARY KEY,
   student_name VARCHAR NOT NULL UNIQUE,
-  questions_answered INTEGER [],
-  submitted_answers VARCHAR [],
-  results BOOLEAN []
+  questions_answered INTEGER [] DEFAULT '{}',
+  submitted_answers VARCHAR [] DEFAULT '{}',
+  results BOOLEAN [] DEFAULT '{}'
 );
 
 CREATE TABLE games (
   game_id SERIAL PRIMARY KEY,
   teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
-  students INTEGER [],
+  students INTEGER [] DEFAULT '{}',
   game_name VARCHAR NOT NULL,
   question_list INTEGER []
 );

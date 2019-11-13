@@ -229,7 +229,6 @@ def add_new_student():
     """ Add new student """
 
     if session.get("student_id") is not None:
-        print("WHY HERE")
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
     else:
         # Add student to database, unless student already exists
@@ -282,33 +281,32 @@ def game(teacher):
 
     """ This view controls what the student sees while playing the game"""
 
-    result = ""
     game = ""
     correct = False
     question_number = 0
     question = None
 
-    questions_answered_list = [0]
-    submitted_answers_list = ['']
-    results_list = [True]
-
     if session.get("student_id") is None:
         return redirect("/student")
     else:
-        print(session)
         student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
         questions_answered_list = student.questions_answered
         submitted_answers_list = student.submitted_answers
         results_list = student.results
-        print(student)
-        print(results_list)
 
     # Students submits an answer through the form
     if request.method == 'POST':
 
         # Get the name of the game to display
-        game = request.form.get("game_name")
+        game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": request.form.get("game_name")}).fetchone()
+
+        # Add student to the game
+        student_list = game.students
+        student_list.append(student.student_id)
+        db.execute("UPDATE games SET students = :students", {"students": student_list})
+        db.commit()
+
 
         # Get the question student is answering from the form
         question_number = int(request.form.get("question_number"))
@@ -316,15 +314,9 @@ def game(teacher):
 
         # Did the student get the answer correct?
         if request.form.get("submitted_answer") == question.answer:
-            if results_list is None:
-                results_list = [True]
-            else:
-                results_list.append(True)
+            results_list.append(True)
         else:
-            if results_list is None:
-                results_list = [False]
-            else:
-                results_list.append(False)
+            results_list.append(False)
 
         questions_answered_list.append(question_number)
         submitted_answers_list.append(request.form.get("submitted_answer"))
@@ -335,7 +327,7 @@ def game(teacher):
                     "submitted_answers": submitted_answers_list, "results": results_list})
         db.commit()
 
-    return render_template("game.html", question=question, result=result, student=student.student_name, teacher=teacher, game=game)
+    return render_template("game.html", question=question, student=student, teacher=teacher, game=game)
 
 
 
