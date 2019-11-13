@@ -288,9 +288,9 @@ def game(teacher):
     question_number = 0
     question = None
 
-    questions_answered_list = []
-    submitted_answers_list = []
-    results_list = []
+    questions_answered_list = [0]
+    submitted_answers_list = ['']
+    results_list = [True]
 
     if session.get("student_id") is None:
         return redirect("/student")
@@ -298,9 +298,9 @@ def game(teacher):
         print(session)
         student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
-        questions_answered_list.append(student.questions_answered)
-        submitted_answers_list.append(student.submitted_answers)
-        results_list.append(student.results)
+        questions_answered_list = student.questions_answered
+        submitted_answers_list = student.submitted_answers
+        results_list = student.results
         print(student)
         print(results_list)
 
@@ -316,9 +316,15 @@ def game(teacher):
 
         # Did the student get the answer correct?
         if request.form.get("submitted_answer") == question.answer:
-            results_list.append(True)
+            if results_list is None:
+                results_list = [True]
+            else:
+                results_list.append(True)
         else:
-            results_list.append(False)
+            if results_list is None:
+                results_list = [False]
+            else:
+                results_list.append(False)
 
         questions_answered_list.append(question_number)
         submitted_answers_list.append(request.form.get("submitted_answer"))
