@@ -10,8 +10,8 @@ CREATE TABLE students (
   student_id SERIAL PRIMARY KEY,
   student_name VARCHAR NOT NULL UNIQUE,
   questions_answered INTEGER [],
-  submitted_answer VARCHAR [],
-  result BOOLEAN []
+  submitted_answers VARCHAR [],
+  results BOOLEAN []
 );
 
 CREATE TABLE games (

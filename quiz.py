@@ -4,7 +4,6 @@ import requests
 
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify
 from flask_session import Session
-from datetime import timedelta
 from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -21,9 +20,8 @@ if not os.getenv("QUIZDB_URL"):
 
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SESSION_PERMANENT"] = True
+app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=6)
 Session(app)
 socketio = SocketIO(app)
 
@@ -231,6 +229,7 @@ def add_new_student():
     """ Add new student """
 
     if session.get("student_id") is not None:
+        print("WHY HERE")
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
     else:
         # Add student to database, unless student already exists
@@ -289,10 +288,21 @@ def game(teacher):
     question_number = 0
     question = None
 
+    questions_answered_list = []
+    submitted_answers_list = []
+    results_list = []
+
     if session.get("student_id") is None:
         return redirect("/student")
     else:
+        print(session)
         student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
+
+        questions_answered_list.append(student.questions_answered)
+        submitted_answers_list.append(student.submitted_answers)
+        results_list.append(student.results)
+        print(student)
+        print(results_list)
 
     # Students submits an answer through the form
     if request.method == 'POST':
@@ -306,18 +316,18 @@ def game(teacher):
 
         # Did the student get the answer correct?
         if request.form.get("submitted_answer") == question.answer:
-            print("CORRECT")
-            db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answer = :submitted_answer \
-                        , result = :result) WHERE student_id = :student_id",
-                        {"student_id": student.student_id, "questions_answered": question.question_id,
-                        "submitted_answer": request.form.get('submitted_answer'), "result": True})
-            b.commit()
+            results_list.append(True)
         else:
-            print("NOT CORRECT")
-            db.execute("UPDATE students SET questions_answered = :question_answered, submitted_answer = :submitted_answer, result = :result) WHERE student_id = :student_id",
-                        {"student_id": student.student_id, "questions_answered": question.question_id,
-                        "submitted_answer": request.form.get('submitted_answer'), "result": True})
-            db.commit()
+            results_list.append(False)
+
+        questions_answered_list.append(question_number)
+        submitted_answers_list.append(request.form.get("submitted_answer"))
+
+        db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
+                    results = :results WHERE student_id = :student_id",
+                    {"student_id": student.student_id, "questions_answered": questions_answered_list,
+                    "submitted_answers": submitted_answers_list, "results": results_list})
+        db.commit()
 
     return render_template("game.html", question=question, result=result, student=student.student_name, teacher=teacher, game=game)
 
