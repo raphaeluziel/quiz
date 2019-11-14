@@ -22,6 +22,16 @@
     {% endfor %}
   </ol>
 
+  <ol>
+    {% for question in questions %}
+    <li>
+      {{ question.question }} <br>
+      Correct Answer: <strong>{{ question.answer }}</strong> <br>
+      You chose:
+    </li>
+    {% endfor %}
+  </ol>
+
 
 
 

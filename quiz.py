@@ -285,6 +285,7 @@ def game(teacher):
     correct = False
     question_number = 0
     question = None
+    message = ""
 
     if session.get("student_id") is None:
         return redirect("/student")
@@ -303,31 +304,38 @@ def game(teacher):
 
         # Add student to the game
         student_list = game.students
-        student_list.append(student.student_id)
-        db.execute("UPDATE games SET students = :students", {"students": student_list})
-        db.commit()
+        if student.student_id not in student_list:
+            student_list.append(student.student_id)
+            db.execute("UPDATE games SET students = :students", {"students": student_list})
+            db.commit()
 
 
         # Get the question student is answering from the form
         question_number = int(request.form.get("question_number"))
         question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":question_number}).fetchone()
 
-        # Did the student get the answer correct?
-        if request.form.get("submitted_answer") == question.answer:
-            results_list.append(True)
+        if question_number not in questions_answered_list:
+
+            # Did the student get the answer correct?
+            if request.form.get("submitted_answer") == question.answer:
+                results_list.append(True)
+            else:
+                results_list.append(False)
+
+            questions_answered_list.append(question_number)
+            submitted_answers_list.append(request.form.get("submitted_answer"))
+
+            db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
+                        results = :results WHERE student_id = :student_id",
+                        {"student_id": student.student_id, "questions_answered": questions_answered_list,
+                        "submitted_answers": submitted_answers_list, "results": results_list})
+            db.commit()
+
         else:
-            results_list.append(False)
+            message = "You already submitted an answer to this question."
 
-        questions_answered_list.append(question_number)
-        submitted_answers_list.append(request.form.get("submitted_answer"))
 
-        db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
-                    results = :results WHERE student_id = :student_id",
-                    {"student_id": student.student_id, "questions_answered": questions_answered_list,
-                    "submitted_answers": submitted_answers_list, "results": results_list})
-        db.commit()
-
-    return render_template("game.html", question=question, student=student, teacher=teacher, game=game)
+    return render_template("game.html", question=question, student=student, teacher=teacher, game=game, message=message)
 
 
 
@@ -386,7 +394,9 @@ def end_game():
 
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
-    return render_template("end.html", student=student)
+    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":student.questions_answered}).fetchall()
+
+    return render_template("end.html", student=student, questions=questions)
 
 
 if __name__ == "__main__":
