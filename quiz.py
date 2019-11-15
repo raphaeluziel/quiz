@@ -354,7 +354,8 @@ def message(data):
         question_id = game.question_list[question_number]
         question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": question_id}).fetchone()
     else:
-        emit('end game', room=teacher.username)
+        message = {"game_id": game.game_id}
+        emit('end game', message, room=teacher.username)
         return
 
     message = {
@@ -392,15 +393,27 @@ def end_game():
 
     """Render game over page"""
 
+    # Select the student that played and finished the game
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
+    # Select all the questions that the student answered.
+    """
+    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    PROBLEM: This selects ALL of the questions that the student ever answered
+    in ALL of the games she played.  Must make it more selective.
+    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    """
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":student.questions_answered}).fetchall()
 
     results_list = []
     result = {}
+    total = len(student.questions_answered)
+    correct = 0
 
-    for x in range(len(student.questions_answered)):
-        print("X = {}".format(x))
+    # Here I am creating a list of dicts that combine the question with the students
+    # answers.  I think a postgres join would have been better, but not sure if
+    # that works with arrays as references to other tables, so I made a copy
+    for x in range(total):
         result["question"] = questions[x].question
         result["choice_a"] = questions[x].choice_a
         result["choice_b"] = questions[x].choice_b
@@ -409,15 +422,15 @@ def end_game():
         result["answer"] = questions[x].answer
         result["submitted_answer"] = student.submitted_answers[x]
         result["result"] = student.results[x]
-        print("result = {}".format(result))
-        results_list.append(result)
-        print("results list = {}".format(results_list))
+        results_list.append(result.copy())
 
-    #print("RESULTS")
-    #print(result)
-    #print(results_list)
+    # Calculate student's score
+    for x in student.results:
+        if x:
+            correct = correct + 1
+    score = round(100 * correct / total)
 
-    return render_template("end.html", student=student, questions=questions, results_list=results_list)
+    return render_template("end.html", student=student, questions=questions, results_list=results_list, score=score)
 
 
 if __name__ == "__main__":

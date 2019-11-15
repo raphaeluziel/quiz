@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       '<br>Answer: <strong>' + data.answer + '</strong>';
     });
 
-  socket.on('end game', function() {
+  socket.on('end game', data => {
     document.location.replace("/results");
   });
 
