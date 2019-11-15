@@ -396,7 +396,28 @@ def end_game():
 
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":student.questions_answered}).fetchall()
 
-    return render_template("end.html", student=student, questions=questions)
+    results_list = []
+    result = {}
+
+    for x in range(len(student.questions_answered)):
+        print("X = {}".format(x))
+        result["question"] = questions[x].question
+        result["choice_a"] = questions[x].choice_a
+        result["choice_b"] = questions[x].choice_b
+        result["choice_c"] = questions[x].choice_c
+        result["choice_d"] = questions[x].choice_d
+        result["answer"] = questions[x].answer
+        result["submitted_answer"] = student.submitted_answers[x]
+        result["result"] = student.results[x]
+        print("result = {}".format(result))
+        results_list.append(result)
+        print("results list = {}".format(results_list))
+
+    #print("RESULTS")
+    #print(result)
+    #print(results_list)
+
+    return render_template("end.html", student=student, questions=questions, results_list=results_list)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,33 @@
 
   <h3>{{ student.student_name }}</h3>
 
+  {{ results_list[0] }}
+
+  <ol>
+    {% for result in results_list %}
+    <li>
+      {{ result.question }}<br>
+      (A) {{ result.choice_a }}<br>
+      (B) {{ result.choice_b }}<br>
+      (C) {{ result.choice_c }}<br>
+      (D) {{ result.choice_d }}<br>
+      Correct answer: <strong>{{ result.answer }}</strong><br>
+      Your Answer: <em>{{ result.submitted_answer}} </em><br>&nbsp;
+    </li>
+    {% endfor %}
+  </ol>
+
+  <ol>
+    {% for x in student %}
+    <li>
+      {{ x }} <br>
+      {{ x.questions_answered }} <br>
+      {{ x.submitted_answers}} <br>
+      {{ x.results }}
+    </li>
+    {% endfor %}
+  </ol>
+
   <ol>
     {% for answer in student.results %}
     <li>
@@ -26,6 +53,10 @@
     {% for question in questions %}
     <li>
       {{ question.question }} <br>
+      (A) {{ question.choice_a }} <br>
+      (B) {{ question.choice_b }} <br>
+      (C) {{ question.choice_c }} <br>
+      (D) {{ question.choice_d }} <br>
       Correct Answer: <strong>{{ question.answer }}</strong> <br>
       You chose:
     </li>
