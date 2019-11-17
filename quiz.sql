@@ -8,10 +8,12 @@ CREATE TABLE teachers (
 
 CREATE TABLE students (
   student_id SERIAL PRIMARY KEY,
-  student_name VARCHAR NOT NULL UNIQUE,
+  student_name VARCHAR NOT NULL,
+  students_teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
   questions_answered INTEGER [] DEFAULT '{}',
   submitted_answers VARCHAR [] DEFAULT '{}',
-  results BOOLEAN [] DEFAULT '{}'
+  results BOOLEAN [] DEFAULT '{}',
+  UNIQUE (student_name, students_teacher)
 );
 
 CREATE TABLE games (

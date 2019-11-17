@@ -2,6 +2,10 @@ import os
 import json
 import requests
 
+# To enable websockets in VPS
+import eventlet
+from eventlet import wsgi
+
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify
 from flask_session import Session
 from flask_socketio import SocketIO, emit, rooms, join_room
@@ -169,6 +173,8 @@ def create_new_game():
     db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
                {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
     db.commit()
+
+    session["game_name"] = request.form.get("game_name")
 
     return redirect("/teacher")
 
@@ -355,7 +361,7 @@ def message(data):
         question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": question_id}).fetchone()
     else:
         message = {"game_id": game.game_id}
-        emit('end game', message, room=teacher.username)
+        emit('see results', message, room=teacher.username)
         return
 
     message = {
@@ -372,24 +378,50 @@ def message(data):
     # Server sends client the data
     emit("question", message, room=teacher.username)
 
+# Server receives end game signal from client
+@socketio.on("end game")
+def message(data):
+
+    print("receiveing signal from client to end the game")
+    print("DATA: {}".format(data))
+    print(session)
+
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
+
+    message = {
+        "message": "Game is Over!",
+        "teacher": teacher.teacher_id,
+        "game": game.game_id
+    }
+
+    print("DATA: {}".format(data))
+    print("MESSAGE {}".format(message))
+
+    # Server sends signal that game is over
+    emit("game over", message, room=teacher.username)
+
 # Join a room
 @socketio.on("join")
 def message(data):
     join_room(data["room"])
 
 
-""" **************************** END OF GAME ******************************* """
+""" **************************** SHOW RESULTS ****************************** """
 
 @app.route("/results")
 def results():
 
     """Render game over page"""
 
-    return render_template("results.html")
+    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
+
+    return render_template("results.html", teacher=teacher, game=game)
 
 
-@app.route("/end")
-def end_game():
+@app.route("/score")
+def score():
 
     """Render game over page"""
 
@@ -397,12 +429,7 @@ def end_game():
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
     # Select all the questions that the student answered.
-    """
-    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    PROBLEM: This selects ALL of the questions that the student ever answered
-    in ALL of the games she played.  Must make it more selective.
-    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    """
+
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":student.questions_answered}).fetchall()
 
     results_list = []
@@ -430,7 +457,17 @@ def end_game():
             correct = correct + 1
     score = round(100 * correct / total)
 
-    return render_template("end.html", student=student, questions=questions, results_list=results_list, score=score)
+    return render_template("score.html", student=student, questions=questions, results_list=results_list, score=score)
+
+
+""" **************************** END GAME ****************************** """
+
+@app.route("/end")
+def end_game():
+
+    """Render game over page"""
+
+    return render_template("end.html")
 
 
 if __name__ == "__main__":

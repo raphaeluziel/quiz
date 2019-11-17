@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // The flask socket.io room name is the teacher name
   room_name = document.querySelector('#teacher_username').innerHTML;
+  localStorage.setItem("room_teacher_is_in", room_name);
 
   // Teacher joins the room upon connecting to the socket
   socket.on('connect', function() {
@@ -32,7 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     for (i = 0; i < questionListItems.length; i++){
       questionListItems[i].removeAttribute("style");
     }
-    questionListItems[question_number].setAttribute("style", "background-color: #ffffc0;");
+    if (question_number < questionListItems.length){
+      questionListItems[question_number].setAttribute("style", "background-color: #ffffc0;");
+    }
 
     question_number += 1;
 
@@ -49,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
       '<br>Answer: <strong>' + data.answer + '</strong>';
     });
 
-  socket.on('end game', data => {
+  // Listen for signal that all questions have been sent and go to results
+  socket.on('see results', data => {
     document.location.replace("/results");
   });
 

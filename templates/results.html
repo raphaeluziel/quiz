@@ -1,12 +1,21 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Game Page
+  Results
 {% endblock %}
 
 {% block body %}
 
-  <h1>Game Over!</h1>
+  <h4>{{ teacher.name }}</h4>
 
+  <button id="end_game" class="btn btn-block btn-danger">END GAME</button>
+
+  <!-- needed to get information into end_game.js -->
+
+  <div id="game_id" hidden>{{ game.game_id }}</div>
+  <div id="teacher_username" hidden>{{ teacher.username }}</div>
+  <div id="teacher_id" hidden>{{ teacher.teacher_id }}</div>
+
+  <script type="text/javascript" src="/static/results.js"></script>
 
 {% endblock %}

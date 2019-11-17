@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   room_name = document.querySelector('#room_name').innerHTML;
+  localStorage.setItem("room_student_is_in", room_name);
 
   // Start the socket connection
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('question', data => {
 
     document.getElementById('game_name').innerHTML = data.game;
+    localStorage.setItem("game_student_playing", data.game);
 
     // Create a form based on the question received by the server
     document.querySelector('#question_received').innerHTML =
@@ -44,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-  socket.on('end game', function() {
-    document.location.replace("/end");
+  socket.on('see results', function() {
+    document.location.replace("/score");
   });
 
 });
