@@ -1,3 +1,5 @@
 Delete localstorage and flask sessions upon ending game
 Make unique the combo of game_name and teacher_name
 Use localstorage and sessions to remove some hidden inputs in html
+change .env removing FLASK_DEBUG
+Make accessible to screen readers

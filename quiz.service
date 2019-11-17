@@ -7,7 +7,7 @@ User=raphaeluziel
 Group=www-data
 WorkingDirectory=/home/raphaeluziel/quiz
 Environment="PATH=/home/raphaeluziel/quiz/quizenv/bin"
-ExecStart=/home/raphaeluziel/quiz/quizenv/bin/gunicorn --workers 1 --bind unix:quiz.sock -m 007 wsgi:app
+ExecStart=/home/raphaeluziel/quiz/quizenv/bin/gunicorn --worker-class eventlet -w 1 --bind unix:quiz.sock wsgi:app
 
 
 [Install]
