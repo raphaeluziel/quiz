@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("AM I HERE?");
 
   socket.on('game over', function() {
-    console.log("I SHOULD GET HERE");
+    localStorage.clear();
     document.location.replace("/end");
   });
 

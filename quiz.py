@@ -170,11 +170,14 @@ def create_new_game():
         question_list.append(int(i))
 
     # Insert list into database
-    db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
-               {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
-    db.commit()
-
-    session["game_name"] = request.form.get("game_name")
+    try:
+        db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
+                   {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
+        db.commit()
+        session["game_name"] = request.form.get("game_name")
+    except:
+        message = "Another game already has that name"
+        return render_template("teacher.html", message=message, teacher=session.get("teacher_id"))
 
     return redirect("/teacher")
 
@@ -466,6 +469,15 @@ def score():
 def end_game():
 
     """Render game over page"""
+
+    db.execute("DELETE FROM students")
+
+    students = []
+
+    db.execute("UPDATE games SET students = :students", {"students": students})
+    db.commit()
+
+    session.clear()
 
     return render_template("end.html")
 

@@ -6,8 +6,8 @@ h1, h2, h3, h4, h5, h6{
   text-align: center;
 }
 .error{
-  color: green;
-  font-size: 1.5em;
+  color: red;
+  font-size: 1.2em;
 }
 .form-check{
   margin-left: 20px;

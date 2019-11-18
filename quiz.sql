@@ -21,7 +21,8 @@ CREATE TABLE games (
   teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
   students INTEGER [] DEFAULT '{}',
   game_name VARCHAR NOT NULL,
-  question_list INTEGER []
+  question_list INTEGER [],
+  UNIQUE (game_name, teacher)
 );
 
 CREATE TABLE questions (
