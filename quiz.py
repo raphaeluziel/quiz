@@ -6,7 +6,7 @@ import requests
 import eventlet
 from eventlet import wsgi
 
-from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify
+from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify, flash
 from flask_session import Session
 from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
@@ -169,15 +169,17 @@ def create_new_game():
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
-    # Insert list into database
-    try:
-        db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
-                   {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
-        db.commit()
-        session["game_name"] = request.form.get("game_name")
-    except:
-        message = "Another game already has that name"
-        return render_template("teacher.html", message=message, teacher=session.get("teacher_id"))
+    games = db.execute("SELECT game_name FROM games WHERE teacher = :teacher", {"teacher": session["teacher_id"]}).fetchall()
+
+    for x in games:
+        if x.game_name == request.form.get("game_name"):
+            flash("That name is being used already", 'error')
+            return redirect(url_for('teacher'))
+
+    db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
+               {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
+    db.commit()
+    session["game_name"] = request.form.get("game_name")
 
     return redirect("/teacher")
 
@@ -235,6 +237,7 @@ def student():
 
 @app.route("/add_new_student", methods=["POST"])
 def add_new_student():
+
     """ Add new student """
 
     if session.get("student_id") is not None:
@@ -385,10 +388,6 @@ def message(data):
 @socketio.on("end game")
 def message(data):
 
-    print("receiveing signal from client to end the game")
-    print("DATA: {}".format(data))
-    print(session)
-
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
     game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
 
@@ -397,9 +396,6 @@ def message(data):
         "teacher": teacher.teacher_id,
         "game": game.game_id
     }
-
-    print("DATA: {}".format(data))
-    print("MESSAGE {}".format(message))
 
     # Server sends signal that game is over
     emit("game over", message, room=teacher.username)

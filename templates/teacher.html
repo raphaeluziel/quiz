@@ -24,6 +24,16 @@
     <button type="submit" class="btn btn-primary">Create New Game</button>
   </form>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <p class=flashes>
+      {% for category, message in messages %}
+        <div class="error">{{ message }}</div>
+      {% endfor %}
+      </p>
+    {% endif %}
+  {% endwith %}
+
   <br>
   <h4>Add a question to the database:</h4>
   <form action="{{ url_for('add_new_question') }}" method="post">
@@ -71,7 +81,5 @@
    {% endfor %}
   </ul>
 
-
-  <div class="error">{{ message }}</div>
 
 {% endblock %}
