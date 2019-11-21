@@ -1,1 +1,1 @@
-web: gunicorn quiz:app
+web: gunicorn -k flask_sockets.worker quiz:app
