@@ -6,3 +6,4 @@ SQLAlchemy
 requests
 python-dotenv
 eventlet
+gunicorn
