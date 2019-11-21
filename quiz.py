@@ -19,8 +19,10 @@ load_dotenv()
 app = Flask(__name__)
 
 # Check for environment variable
-if not os.getenv("QUIZDB_URL"):
-    raise RuntimeError("QUIZDB_URL is not set")
+#if not os.getenv("QUIZDB_URL"):
+#    raise RuntimeError("QUIZDB_URL is not set")
+
+QUIZDB_URL="postgres://kooeoronbdeltk:85e682a8b876a71a8598cd5833c00a55e004f47edf7d554c2aeda0d953657e71@ec2-174-129-253-1.compute-1.amazonaws.com:5432/d75ftpmjlmvn13"
 
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
