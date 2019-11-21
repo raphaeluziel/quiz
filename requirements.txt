@@ -1,7 +1,6 @@
 Flask
 Flask-Session
 Flask-SocketIO
-Flask-Sockets
 psycopg2
 SQLAlchemy
 requests
