@@ -8,11 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('join', {room: localStorage.getItem("room_student_is_in")});
   });
 
-  // The flask socket.io room name is the teacher name
-  // room_name = document.querySelector('#teacher_username').innerHTML;
-
-  console.log("AM I HERE?");
-
+  // Listen for signal from server that the game is over
   socket.on('game over', function() {
     localStorage.clear();
     document.location.replace("/end");

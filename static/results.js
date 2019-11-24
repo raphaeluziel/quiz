@@ -11,27 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('join', {room: localStorage.getItem("room_teacher_is_in")});
   });
 
+  // Send signal to server that the all questions have been sent out
   document.querySelector('#end_game').onclick = () => {
-
-    console.log("IM A CLICKING");
-
     data = {
       "game_id": "Sending end of game signal"
     };
     // Send signal to server that game is over
     socket.emit('end game', data);
-
   };
 
-  console.log("OK");
-
   // Listen for signal that all questions have been sent and go to results
-
-
   socket.on('game over', data => {
-    console.log("HEY YOU");
-    document.location.replace("/end");
+    document.location.replace("/end_game_for_teacher");
   });
-
 
 });

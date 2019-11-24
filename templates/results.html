@@ -8,6 +8,14 @@
 
   <h4>{{ teacher.name }}</h4>
 
+  <ol>
+    {% for student in students %}
+    <li>
+      {{ student.student_name}}: {{ student.results }}
+    </li>
+    {% endfor %}
+  </ol>
+
   <button id="end_game" class="btn btn-block btn-danger">END GAME</button>
 
   <!-- needed to get information into end_game.js -->

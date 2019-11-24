@@ -12,13 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('join', {room: room_name});
   });
 
-
   var question_number = 0;
   var questionList = document.getElementById('upcoming_questions');
   var questionListItems = questionList.getElementsByTagName('li');
 
   //questionListItems[0].setAttribute("style", "background-color: #ecb176;");
-
   document.querySelector('#submit_question').onclick = () => {
 
     data = {
@@ -36,9 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (question_number < questionListItems.length){
       questionListItems[question_number].setAttribute("style", "background-color: #ffffc0;");
     }
-
     question_number += 1;
-
   };
 
   //Listen for question from server to display on teacher game control page
