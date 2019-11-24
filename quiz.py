@@ -251,7 +251,7 @@ def add_new_student():
 
     if session.get("student_id") is not None:
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
-        print(student)
+
     else:
         # Add student to database, unless student already exists
         try:
@@ -264,8 +264,8 @@ def add_new_student():
         except:
             return render_template("student.html", message="Name is already being used")
 
-        # Redirect to the game page and teacher room
-        game_url = "/game/" + request.form.get("teacher")
+    # Redirect to the game page and teacher room
+    game_url = "/game/" + request.form.get("teacher")
 
     return redirect(game_url)
 
