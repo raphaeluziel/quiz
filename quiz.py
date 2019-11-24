@@ -389,16 +389,9 @@ def message(data):
 def message(data):
 
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
-    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
-
-    message = {
-        "message": "Game is Over!",
-        "teacher": teacher.teacher_id,
-        "game": game.game_id
-    }
 
     # Server sends signal that game is over
-    emit("game over", message, room=teacher.username)
+    emit("game over", room=teacher.username)
 
 # Join a room
 @socketio.on("join")
@@ -456,7 +449,7 @@ def score():
             correct = correct + 1
     score = round(100 * correct / total)
 
-    return render_template("score.html", student=student, questions=questions, results_list=results_list, score=score)
+    return render_template("score.html", student=student, questions=questions, results_list=results_list, score=score, game=game)
 
 
 """ **************************** END GAME ****************************** """
