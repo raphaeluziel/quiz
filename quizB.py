@@ -240,8 +240,6 @@ def add_new_student():
 
     """ Add new student """
 
-    print(session)
-
     # Find the teacher in the database that the student has selected
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":request.form.get("teacher")}).fetchone()
 
@@ -249,17 +247,19 @@ def add_new_student():
     if teacher is None:
         return render_template("student.html", message="No teacher by that username in our database")
 
-    student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
+    if session.get("student_id") is not None:
+        student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
-    try:
-        db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
-                    {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
-        db.commit()
-        # Log user in automatically after registering
-        student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
-        session["student_id"] = student.student_id
-    except:
-        if student.student_id != session.get("student_id"):
+    else:
+        # Add student to database, unless student already exists
+        try:
+            db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
+                        {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
+            db.commit()
+            # Log user in automatically after registering
+            student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
+            session["student_id"] = student.student_id
+        except:
             return render_template("student.html", message="Name is already being used")
 
     # Redirect to the game page and teacher room
@@ -301,11 +301,6 @@ def game(teacher):
 
     """ This view controls what the student sees while playing the game"""
 
-
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
-    print(session)
-    print(game)
-
     game = ""
     correct = False
     question_number = 0
@@ -313,9 +308,8 @@ def game(teacher):
     message = ""
 
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
-    print(session)
+
     if student is None:
-        print("IM HERE?  WHY")
         return redirect("/student")
     else:
         questions_answered_list = student.questions_answered
@@ -327,8 +321,6 @@ def game(teacher):
 
         # Get the name of the game to display
         game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": request.form.get("game_name")}).fetchone()
-        session["game_name"] = game.game_name
-        print(session)
 
         # Add student to the game
         student_list = game.students
@@ -433,10 +425,6 @@ def score():
 
     """Render game over page"""
 
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
-    print(session)
-    print(game)
-
     # Select the student that played and finished the game
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
@@ -446,7 +434,7 @@ def score():
 
     results_list = []
     result = {}
-    total = len(game.question_list)
+    total = len(student.questions_answered)
     correct = 0
 
     # Here I am creating a list of dicts that combine the question with the students
