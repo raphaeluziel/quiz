@@ -301,10 +301,7 @@ def game(teacher):
 
     """ This view controls what the student sees while playing the game"""
 
-
     game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
-    print(session)
-    print(game)
 
     game = ""
     correct = False
@@ -313,7 +310,7 @@ def game(teacher):
     message = ""
 
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
-    print(session)
+
     if student is None:
         print("IM HERE?  WHY")
         return redirect("/student")
@@ -328,7 +325,7 @@ def game(teacher):
         # Get the name of the game to display
         game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": request.form.get("game_name")}).fetchone()
         session["game_name"] = game.game_name
-        print(session)
+        print("SESSION IN GAME PLAY {}".format(session))
 
         # Add student to the game
         student_list = game.students
@@ -350,7 +347,11 @@ def game(teacher):
                 results_list.append(False)
 
             questions_answered_list.append(question_number)
-            submitted_answers_list.append(request.form.get("submitted_answer"))
+            print("SUBMITTED ANSWER = {}".format(request.form.get("submitted_answer")))
+            if request.form.get("submitted_answer") is None:
+                submitted_answers_list.append("NO ANSWER")
+            else:
+                submitted_answers_list.append(request.form.get("submitted_answer"))
 
             db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
                         results = :results WHERE student_id = :student_id",
@@ -433,9 +434,9 @@ def score():
 
     """Render game over page"""
 
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
-    print(session)
-    print(game)
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
+    print("SESSION IN SCORE {}".format(session))
+    print("GAME = {}".format(game))
 
     # Select the student that played and finished the game
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
@@ -446,13 +447,13 @@ def score():
 
     results_list = []
     result = {}
-    total = len(game.question_list)
+    questions_answered = len(student.questions_answered)
     correct = 0
 
     # Here I am creating a list of dicts that combine the question with the students
     # answers.  I think a postgres join would have been better, but not sure if
     # that works with arrays as references to other tables, so I made a copy
-    for x in range(total):
+    for x in range(questions_answered):
         result["question"] = questions[x].question
         result["choice_a"] = questions[x].choice_a
         result["choice_b"] = questions[x].choice_b
@@ -464,6 +465,7 @@ def score():
         results_list.append(result.copy())
 
     # Calculate student's score
+    total = len(game.question_list)
     for x in student.results:
         if x:
             correct = correct + 1
@@ -500,6 +502,8 @@ def end_game_for_teacher():
 def end_game():
 
     """Render end of game page for the students"""
+
+    session.clear()
 
     return render_template("end.html")
 
