@@ -420,12 +420,10 @@ def results():
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
     students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchall()
 
-    print("GAME = {}".format(game))
-    print("SESSION = {}".format(session))
+    print("STUDENTS = {}".format(students))
 
-    print(students)
-
-    results = {}
+    results_of_all_students = []
+    student_results = {}
 
     print("GAME = {}".format(game.game_name))
     for x in students:
@@ -434,22 +432,24 @@ def results():
         temp_submitted_answers = x.submitted_answers.copy()
         temp_student_results = x.results.copy()
 
-        results["students_name"] = x.student_name
-        results["questions_in_game"] = game.question_list.copy()
-        results["student_answers"] = ["NOT ANSWERED"] * len(game.question_list)
-        results["student_results"] = [False] * len(game.question_list)
+        student_results["students_name"] = x.student_name
+        student_results["questions_in_game"] = game.question_list.copy()
+        student_results["student_answers"] = ["NOT ANSWERED"] * len(game.question_list)
+        student_results["student_results"] = [False] * len(game.question_list)
 
-        print("STUDENT ANSWERS = {}".format(results))
+        print("STUDENT_RESULTS = {}".format(student_results))
 
         for y in range(len(game.question_list)):
             if game.question_list[y] in x.questions_answered:
-                results["student_answers"][y] = temp_submitted_answers.pop(0)
-                results["student_results"][y] = temp_student_results.pop(0)
+                student_results["student_answers"][y] = temp_submitted_answers.pop(0)
+                student_results["student_results"][y] = temp_student_results.pop(0)
 
-        print("THANKSGIVING = {}".format(results))
+        results_of_all_students.append(student_results.copy())
+
+        print("THANKSGIVING = {}".format(results_of_all_students))
 
 
-    return render_template("results.html", teacher=teacher, game=game, students=students, results=results)
+    return render_template("results.html", teacher=teacher, game=game, students=students, results=results_of_all_students)
 
 
 @app.route("/score")

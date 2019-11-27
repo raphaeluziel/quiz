@@ -10,13 +10,16 @@
 
   {{ results }}
 
+
   <ol>
+    {% for result in results %}
     <li>
-      {{ results.students_name }}<br>
-      {{ results.questions_in_game }}<br>
-      {{ results.student_answers }}<br>
-      {{ results.student_results}}
+      {{ result.students_name }}<br>
+      {{ result.questions_in_game }}<br>
+      {{ result.student_answers }}<br>
+      {{ result.student_results}}
     </li>
+    {% endfor %}
   </ol>
 
 
