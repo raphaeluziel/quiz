@@ -423,6 +423,8 @@ def results():
     print("GAME = {}".format(game))
     print("SESSION = {}".format(session))
 
+    print(students)
+
     results = {}
 
     print("GAME = {}".format(game.game_name))
