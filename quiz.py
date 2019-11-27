@@ -347,7 +347,7 @@ def game(teacher):
             questions_answered_list.append(question_number)
             submitted_answers_list.append(request.form.get("submitted_answer"))
 
-            db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
+            db.execute("UPDATE students SET questions_answered = :questions_answered,   submitted_answers = :submitted_answers, \
                         results = :results WHERE student_id = :student_id",
                         {"student_id": student.student_id, "questions_answered": questions_answered_list,
                         "submitted_answers": submitted_answers_list, "results": results_list})
@@ -427,22 +427,27 @@ def results():
 
     print("GAME = {}".format(game.game_name))
     for x in students:
-        student
         print("RESULTS: {}".format(x.questions_answered))
+
+        temp_submitted_answers = x.submitted_answers.copy()
+        temp_student_results = x.results.copy()
+
         results["students_name"] = x.student_name
-        results["questions_in_game"] = [0] * len(game.question_list)
+        results["questions_in_game"] = game.question_list.copy()
         results["student_answers"] = ["NOT ANSWERED"] * len(game.question_list)
+        results["student_results"] = [False] * len(game.question_list)
+
         print("STUDENT ANSWERS = {}".format(results))
+
         for y in range(len(game.question_list)):
-            if game.question_list[y] not in x.questions_answered:
-                print("NO")
-                results["student_answers"][y] = False
-            else:
-                #results["questions_in_game"][y] = "NOT ANSWERED"
+            if game.question_list[y] in x.questions_answered:
+                results["student_answers"][y] = temp_submitted_answers.pop(0)
+                results["student_results"][y] = temp_student_results.pop(0)
+
         print("THANKSGIVING = {}".format(results))
 
 
-    return render_template("results.html", teacher=teacher, game=game, students=students)
+    return render_template("results.html", teacher=teacher, game=game, students=students, results=results)
 
 
 @app.route("/score")

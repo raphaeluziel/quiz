@@ -8,6 +8,14 @@
 
   <h4>{{ teacher.name }}</h4>
 
+  {{ results }}
+
+  <ul>
+    {% for result in results %}
+      <li>{{ result }}</li>
+    {% endfor %}
+  </ul>
+
   <ol>
     {% for student in students %}
     <li>
