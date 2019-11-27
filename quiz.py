@@ -416,9 +416,31 @@ def results():
 
     """Render game over page"""
 
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
     students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchall()
+
+    print("GAME = {}".format(game))
+    print("SESSION = {}".format(session))
+
+    results = {}
+
+    print("GAME = {}".format(game.game_name))
+    for x in students:
+        student
+        print("RESULTS: {}".format(x.questions_answered))
+        results["students_name"] = x.student_name
+        results["questions_in_game"] = [0] * len(game.question_list)
+        results["student_answers"] = ["NOT ANSWERED"] * len(game.question_list)
+        print("STUDENT ANSWERS = {}".format(results))
+        for y in range(len(game.question_list)):
+            if game.question_list[y] not in x.questions_answered:
+                print("NO")
+                results["student_answers"][y] = False
+            else:
+                #results["questions_in_game"][y] = "NOT ANSWERED"
+        print("THANKSGIVING = {}".format(results))
+
 
     return render_template("results.html", teacher=teacher, game=game, students=students)
 

@@ -8,3 +8,14 @@ web: gunicorn quiz:app
 web: gunicorn --worker-class eventlet -w 1 quiz:app
 
 Hey
+
+
+results = {}
+
+print("GAME = {}".format(game.game_name))
+for x in students:
+    print("RESULTS: {}".format(x))
+    results["students_name"] = x.student_name
+    for y in range(len(game.question_list)):
+        results["questions_in_game"].append("NOT ANSWERED")
+    print("RESULTS = {}".format(results))
