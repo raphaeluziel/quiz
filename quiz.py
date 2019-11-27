@@ -312,7 +312,6 @@ def game(teacher):
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
     if student is None:
-        print("IM HERE?  WHY")
         return redirect("/student")
     else:
         questions_answered_list = student.questions_answered
@@ -325,7 +324,6 @@ def game(teacher):
         # Get the name of the game to display
         game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": request.form.get("game_name")}).fetchone()
         session["game_name"] = game.game_name
-        print("SESSION IN GAME PLAY {}".format(session))
 
         # Add student to the game
         student_list = game.students
@@ -347,11 +345,7 @@ def game(teacher):
                 results_list.append(False)
 
             questions_answered_list.append(question_number)
-            print("SUBMITTED ANSWER = {}".format(request.form.get("submitted_answer")))
-            if request.form.get("submitted_answer") is None:
-                submitted_answers_list.append("NO ANSWER")
-            else:
-                submitted_answers_list.append(request.form.get("submitted_answer"))
+            submitted_answers_list.append(request.form.get("submitted_answer"))
 
             db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
                         results = :results WHERE student_id = :student_id",
@@ -432,44 +426,48 @@ def results():
 @app.route("/score")
 def score():
 
-    """Render game over page"""
+    """Render student score page where student sees his/her results"""
 
     game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
-    print("SESSION IN SCORE {}".format(session))
-    print("GAME = {}".format(game))
 
     # Select the student that played and finished the game
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
 
     # Select all the questions that the student answered.
 
-    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":student.questions_answered}).fetchall()
+    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
 
     results_list = []
     result = {}
-    questions_answered = len(student.questions_answered)
+    number_of_questions = len(game.question_list)
     correct = 0
+
+    y = 0
 
     # Here I am creating a list of dicts that combine the question with the students
     # answers.  I think a postgres join would have been better, but not sure if
     # that works with arrays as references to other tables, so I made a copy
-    for x in range(questions_answered):
+    for x in range(number_of_questions):
         result["question"] = questions[x].question
         result["choice_a"] = questions[x].choice_a
         result["choice_b"] = questions[x].choice_b
         result["choice_c"] = questions[x].choice_c
         result["choice_d"] = questions[x].choice_d
         result["answer"] = questions[x].answer
-        result["submitted_answer"] = student.submitted_answers[x]
-        result["result"] = student.results[x]
+        if game.question_list[x] not in student.questions_answered:
+            result["submitted_answer"] = "NOT ANSWERED"
+            result["result"] = False
+            y = y + 1
+        else:
+            result["submitted_answer"] = student.submitted_answers[x - y]
+            result["result"] = student.results[x - y]
         results_list.append(result.copy())
 
     # Calculate student's score
-    total = len(game.question_list)
     for x in student.results:
         if x:
             correct = correct + 1
-    score = round(100 * correct / total)
+    score = round(100 * correct / number_of_questions)
 
     return render_template("score.html", student=student, questions=questions, results_list=results_list, score=score, game=game)
 
