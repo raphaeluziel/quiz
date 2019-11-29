@@ -27,8 +27,8 @@ if not os.getenv("QUIZDB_URL"):
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
-app.config['SESSION_FILE_THRESHOLD'] = 5
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+app.config["SESSION_FILE_THRESHOLD"] = 100
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 socketio = SocketIO(app)
