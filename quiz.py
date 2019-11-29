@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import datetime
 
 # To enable websockets in VPS
 import eventlet
@@ -8,6 +9,7 @@ from eventlet import wsgi
 
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify, flash
 from flask_session import Session
+from datetime import timedelta
 from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,7 +26,9 @@ if not os.getenv("QUIZDB_URL"):
 
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
+app.config['SESSION_FILE_THRESHOLD'] = 5
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 socketio = SocketIO(app)
@@ -94,7 +98,7 @@ def login():
         # Remember user who logged in
         session["teacher_id"] = teacher.teacher_id
 
-        # Begin searching for books
+        # Teacher can now start using the app
         return redirect("/teacher")
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -105,9 +109,9 @@ def login():
 @app.route("/logout")
 def logout():
 
-    """Log user out"""
+    """Log teacher out"""
 
-    # Forget user # ID:
+    # Forget teacher's user ID:
     session.clear()
 
     # Send user back to home page
@@ -169,17 +173,17 @@ def create_new_game():
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
-    games = db.execute("SELECT game_name FROM games WHERE teacher = :teacher", {"teacher": session["teacher_id"]}).fetchall()
-
+    # Ensure teacher has not already created a game with that name
+    games = db.execute("SELECT game_name FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
     for x in games:
         if x.game_name == request.form.get("game_name"):
             flash("That name is being used already", 'error')
             return redirect(url_for('teacher'))
 
+    # Create game, add it to the database
     db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
-               {"teacher":session["teacher_id"], "game_name":request.form.get("game_name"), "question_list":question_list})
+               {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name"), "question_list":question_list})
     db.commit()
-    session["game_name"] = request.form.get("game_name")
 
     return redirect("/teacher")
 
@@ -191,7 +195,7 @@ def add_new_question():
     # Insert question into database
     db.execute("INSERT INTO questions (teacher, question, choice_a, choice_b, choice_c, choice_d, answer) \
                VALUES (:teacher, :question, :choice_a, :choice_b, :choice_c, :choice_d, :answer)",
-               {"teacher":session["teacher_id"],
+               {"teacher":session.get("teacher_id"),
                "question":request.form.get("question"),
                "choice_a":request.form.get("choice_a"),
                "choice_b":request.form.get("choice_b"),
@@ -209,14 +213,10 @@ def teacher():
 
     """ This is the main page for the teacher to create games, add questions """
 
-    # Get user information to welcome teacher to their page
-    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session["teacher_id"]}).fetchone()
-
-    # Get all questions in database for teacher to choose from
-    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher", {"teacher": session["teacher_id"]}).fetchall()
-
-    # Show all games created by teacher
-    games = db.execute("SELECT * FROM games WHERE teacher = :teacher", {"teacher": session["teacher_id"]}).fetchall()
+    # Query database for information to display on the main teachedr page
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
+    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
+    games = db.execute("SELECT * FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
 
     return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
 
@@ -229,7 +229,7 @@ def student():
 
     """ This is the main page for the student to create username and start play """
 
-    # Get a list of all teachers for student to choose from
+    # Get a list of all teachers for student to choose from (using typeahead)
     teachers = db.execute("SELECT * FROM teachers").fetchall()
 
     return render_template("student.html", teachers=teachers)
@@ -240,8 +240,6 @@ def add_new_student():
 
     """ Add new student """
 
-    print(session)
-
     # Find the teacher in the database that the student has selected
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":request.form.get("teacher")}).fetchone()
 
@@ -249,15 +247,21 @@ def add_new_student():
     if teacher is None:
         return render_template("student.html", message="No teacher by that username in our database")
 
+    # If student is already in database, fetch his/her information
     student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
 
+    # Try to add student into database unless the name is already being used
     try:
         db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
                     {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
         db.commit()
+
         # Log user in automatically after registering
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
         session["student_id"] = student.student_id
+
+    # This part is reached if student in session is not the same as the name the
+    # student is sending with the form, and that name is already being used
     except:
         if student.student_id != session.get("student_id"):
             return render_template("student.html", message="Name is already being used")
@@ -288,12 +292,20 @@ def game_control(teacher, game_name):
 
     """ This view is where the teacher controls the game and views the results """
 
-    game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session["teacher_id"]}).fetchone()
-    question = db.execute("SELECT * FROM questions").fetchone()
+    # Query database for information to display on the game control page
+    game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session.get("teacher_id")}).fetchone()
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
-    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session["teacher_id"]}).fetchone()
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
 
-    return render_template("game_control.html", game=game, question=question, questions=questions, teacher=teacher)
+    # If teacher gets here via a get, and the game does not exist redirect them
+    # back to the teacher page, otherwise add the game name to the active game
+    if game is None:
+        return redirect("/teacher")
+    else:
+        db.execute("UPDATE teachers SET active_game = :active_game WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id"), "active_game":game_name})
+        db.commit()
+
+    return render_template("game_control.html", questions=questions, teacher=teacher)
 
 
 @app.route("/game/<string:teacher>", methods=["GET", "POST"])
@@ -301,29 +313,34 @@ def game(teacher):
 
     """ This view controls what the student sees while playing the game"""
 
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": session.get("game_id")}).fetchone()
-
     game = ""
     correct = False
     question_number = 0
     question = None
     message = ""
 
+    # Get the student if in session, otherwise redirect to student page to "log in"
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
-
     if student is None:
         return redirect("/student")
     else:
+        # Create lists to temporarily hold student answer submissions
         questions_answered_list = student.questions_answered
         submitted_answers_list = student.submitted_answers
         results_list = student.results
 
+    # Get teacher information that student selected
+    teacher_selected = db.execute("SELECT * FROM teachers WHERE username = :username", {"username": teacher}).fetchone()
+
     # Students submits an answer through the form
     if request.method == 'POST':
 
-        # Get the name of the game to display
-        game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": request.form.get("game_name")}).fetchone()
-        session["game_name"] = game.game_name
+        # Get the game that the teacher is transmitting
+        game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": teacher_selected.active_game}).fetchone()
+
+        # Set the active game for the student
+        db.execute("UPDATE students SET students_active_game = :students_active_game WHERE student_id = :student_id", {"student_id": session.get("student_id"), "students_active_game":game.game_name})
+        db.commit()
 
         # Add student to the game
         student_list = game.students
@@ -336,6 +353,7 @@ def game(teacher):
         question_number = int(request.form.get("question_number"))
         question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":question_number}).fetchone()
 
+        # Student has not already submitted an answer to this question
         if question_number not in questions_answered_list:
 
             # Did the student get the answer correct?
@@ -347,7 +365,7 @@ def game(teacher):
             questions_answered_list.append(question_number)
             submitted_answers_list.append(request.form.get("submitted_answer"))
 
-            db.execute("UPDATE students SET questions_answered = :questions_answered,   submitted_answers = :submitted_answers, \
+            db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
                         results = :results WHERE student_id = :student_id",
                         {"student_id": student.student_id, "questions_answered": questions_answered_list,
                         "submitted_answers": submitted_answers_list, "results": results_list})
@@ -355,7 +373,6 @@ def game(teacher):
 
         else:
             message = "You already submitted an answer to this question."
-
 
     return render_template("game.html", question=question, student=student, teacher=teacher, game=game, message=message)
 
@@ -369,7 +386,7 @@ def message(data):
 
     teacher = db.execute("SELECT username FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
     question_number = data["question_number"]
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id": int(data['game_id'])}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name AND teacher = :teacher", {"game_name":data['game_name'], "teacher":int(data['teacher_id'])}).fetchone()
     number_of_questions = len(game.question_list)
 
     if question_number < number_of_questions:
@@ -412,23 +429,25 @@ def message(data):
 """ **************************** SHOW RESULTS ****************************** """
 
 @app.route("/results")
+@login_required
 def results():
 
-    """Render game over page"""
+    """Show teacher the results of all students who played the game"""
 
-    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
+    # Query database for information to display in the results page
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": teacher.active_game}).fetchone()
     students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchall()
 
-    print("STUDENTS = {}".format(students))
-
+    # Creating lists and dicts of the information to display
     results_of_all_students = []
     student_results = {}
 
-    print("GAME = {}".format(game.game_name))
+    # The list holding what the students submitted may be smaller than the number
+    # of questions in the game.  A new list is therefore created to match the length
+    # of the number of questions in the game, treating the questions student did
+    # not answer as wrong (and NOT ANSWERED will be displayed)
     for x in students:
-        print("RESULTS: {}".format(x.questions_answered))
-
         temp_submitted_answers = x.submitted_answers.copy()
         temp_student_results = x.results.copy()
 
@@ -436,20 +455,23 @@ def results():
         student_results["questions_in_game"] = game.question_list.copy()
         student_results["student_answers"] = ["NOT ANSWERED"] * len(game.question_list)
         student_results["student_results"] = [False] * len(game.question_list)
-
-        print("STUDENT_RESULTS = {}".format(student_results))
+        student_results["score"] = 0
 
         for y in range(len(game.question_list)):
             if game.question_list[y] in x.questions_answered:
                 student_results["student_answers"][y] = temp_submitted_answers.pop(0)
                 student_results["student_results"][y] = temp_student_results.pop(0)
 
+        # Figure out the students score
+        score = 0
+        for z in student_results:
+            if z == True:
+                score = score + 1
+        student_results["score"] = 100 * score / len(game.question_list)
+
         results_of_all_students.append(student_results.copy())
 
-        print("THANKSGIVING = {}".format(results_of_all_students))
-
-
-    return render_template("results.html", teacher=teacher, game=game, students=students, results=results_of_all_students)
+    return render_template("results.html", teacher=teacher, game=game, students=students, results=results_of_all_students, num_questions=len(game.question_list))
 
 
 @app.route("/score")
@@ -457,14 +479,19 @@ def score():
 
     """Render student score page where student sees his/her results"""
 
-    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": session.get("game_name")}).fetchone()
-
-    # Select the student that played and finished the game
+    # Query database for information to display on student score page
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
-
-    # Select all the questions that the student answered.
-
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student.students_active_game}).fetchone()
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
+
+    # Student is not in session
+    if student is None:
+        return redirect("/student")
+
+    # Something went wrong, session lost its game information
+    if game is None:
+        print("OK, SOMETHING WENT WRONG - STUDENT IS IN SESSION, BUT HAS NO GAME ASSOCIATED WITH HIM/HER.")
+        return redirect("/student")
 
     results_list = []
     result = {}
@@ -511,16 +538,13 @@ def end_game_for_teacher():
     # Student scores are temporary and only valid until the end of the game
     db.execute("DELETE FROM students")
 
-    # Erase students from game
-    students = []
-    db.execute("UPDATE games SET students = :students", {"students": students})
+    # Inactivate the game for the teacher
+    db.execute("UPDATE teachers SET active_game = :active_game WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id"), "active_game":'No Game Being Played'})
     db.commit()
 
-    # Log students out and clear the session, but get teacher info so that the
-    # teacher can remain logged in after session is cleared
-    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id": session["teacher_id"]}).fetchone()
-    session.clear()
-    session["teacher_id"] = teacher.teacher_id
+    # Erase students from game
+    db.execute("UPDATE games SET students = :students WHERE teacher = :teacher", {"students": [], "teacher":session.get("teacher_id")})
+    db.commit()
 
     return redirect("/teacher")
 

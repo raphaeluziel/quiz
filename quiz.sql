@@ -3,13 +3,15 @@ CREATE TABLE teachers (
   name VARCHAR NOT NULL,
   username VARCHAR NOT NULL UNIQUE,
   email VARCHAR NOT NULL UNIQUE,
-  hash VARCHAR NOT NULL
+  hash VARCHAR NOT NULL,
+  active_game VARCHAR DEFAULT 'No Game Being Played'
 );
 
 CREATE TABLE students (
   student_id SERIAL PRIMARY KEY,
   student_name VARCHAR NOT NULL,
   students_teacher INTEGER REFERENCES teachers ON DELETE CASCADE,
+  students_active_game VARCHAR DEFAULT 'No Game Being Played',
   questions_answered INTEGER [] DEFAULT '{}',
   submitted_answers VARCHAR [] DEFAULT '{}',
   results BOOLEAN [] DEFAULT '{}',

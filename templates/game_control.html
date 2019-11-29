@@ -7,7 +7,7 @@
 {% block body %}
 
   <h4>{{ teacher.name }}</h4>
-  <h5>Game: {{ game.game_name }}</h5>
+  <h5>Game: {{ teacher.active_game }}</h5>
 
   <strong>Question now in play:</strong>
   <p id="active-question">No questions sent yet.</p>
@@ -31,7 +31,7 @@
   </ol>
 
   <!-- needed to get information into game_control.js -->
-  <div id="game_id" hidden>{{ game.game_id }}</div>
+  <div id="game_name" hidden>{{ teacher.active_game }}</div>
   <div id="teacher_id" hidden>{{ teacher.teacher_id }}</div>
   <div id="teacher_username" hidden>{{ teacher.username }}</div>
 

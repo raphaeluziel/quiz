@@ -16,13 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   var questionList = document.getElementById('upcoming_questions');
   var questionListItems = questionList.getElementsByTagName('li');
 
-  //questionListItems[0].setAttribute("style", "background-color: #ecb176;");
   document.querySelector('#submit_question').onclick = () => {
 
     data = {
       "message": "pushing question through game_control",
       "question_number": question_number,
-      "game_id": document.querySelector("#game_id").innerHTML,
+      "game_name": document.querySelector("#game_name").innerHTML,
       "teacher_id": document.querySelector("#teacher_id").innerHTML,
     };
     // Send question to the server
@@ -37,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     question_number += 1;
   };
 
-  //Listen for question from server to display on teacher game control page
+  // Listen for question from server to display on teacher game control page
   socket.on('question', data => {
     document.querySelector('#active-question').innerHTML =
       data.question +
