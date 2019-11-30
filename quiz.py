@@ -27,8 +27,8 @@ if not os.getenv("QUIZDB_URL"):
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = False
-#app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
-#app.config["SESSION_FILE_THRESHOLD"] = 100
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+app.config["SESSION_FILE_THRESHOLD"] = 500
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 socketio = SocketIO(app)
@@ -297,7 +297,7 @@ def teacherAPI():
 @login_required
 def game_control(teacher, game_name):
 
-    """ This view is where the teacher controls the game and views the results """
+    """ This view is where the teacher controls the game """
 
     # Query database for information to display on the game control page
     game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session.get("teacher_id")}).fetchone()
@@ -311,6 +311,7 @@ def game_control(teacher, game_name):
     else:
         db.execute("UPDATE teachers SET active_game = :active_game WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id"), "active_game":game_name})
         db.commit()
+        teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
 
     return render_template("game_control.html", questions=questions, teacher=teacher)
 
