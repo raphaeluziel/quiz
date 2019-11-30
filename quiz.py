@@ -229,6 +229,17 @@ def student():
 
     """ This is the main page for the student to create username and start play """
 
+    # Check if student is already in database
+    student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
+
+    if student is None:
+        # Student has been deleted, but session still exists, so clear it
+        session.clear()
+    else:
+        # Student is still in session, and still playing - redirect to the game
+        teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":student.students_teacher}).fetchone()
+        return redirect("/game/" + teacher.username)
+
     # Get a list of all teachers for student to choose from (using typeahead)
     teachers = db.execute("SELECT * FROM teachers").fetchall()
 
@@ -247,9 +258,6 @@ def add_new_student():
     if teacher is None:
         return render_template("student.html", message="No teacher by that username in our database")
 
-    # If student is already in database, fetch his/her information
-    student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
-
     # Try to add student into database unless the name is already being used
     try:
         db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
@@ -263,8 +271,7 @@ def add_new_student():
     # This part is reached if student in session is not the same as the name the
     # student is sending with the form, and that name is already being used
     except:
-        if student.student_id != session.get("student_id"):
-            return render_template("student.html", message="Name is already being used")
+        return render_template("student.html", message="Name is already being used")
 
     # Redirect to the game page and teacher room
     game_url = "/game/" + request.form.get("teacher")
@@ -323,11 +330,11 @@ def game(teacher):
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
     if student is None:
         return redirect("/student")
-    else:
-        # Create lists to temporarily hold student answer submissions
-        questions_answered_list = student.questions_answered
-        submitted_answers_list = student.submitted_answers
-        results_list = student.results
+
+    # Create lists to temporarily hold student answer submissions
+    questions_answered_list = student.questions_answered
+    submitted_answers_list = student.submitted_answers
+    results_list = student.results
 
     # Get teacher information that student selected
     teacher_selected = db.execute("SELECT * FROM teachers WHERE username = :username", {"username": teacher}).fetchone()
@@ -384,9 +391,12 @@ def game(teacher):
 @socketio.on("play game")
 def message(data):
 
+    print("PLAY GAME DATA = {}".format(data))
+
     teacher = db.execute("SELECT username FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
     question_number = data["question_number"]
     game = db.execute("SELECT * FROM games WHERE game_name = :game_name AND teacher = :teacher", {"game_name":data['game_name'], "teacher":int(data['teacher_id'])}).fetchone()
+    print("GAME = {}".format(game))
     number_of_questions = len(game.question_list)
 
     if question_number < number_of_questions:
@@ -397,19 +407,23 @@ def message(data):
         emit('see results', message, room=teacher.username)
         return
 
-    message = {
+    message_for_students = {
         "question_id": question.question_id,
         "question": question.question,
         "choice_a": question.choice_a,
         "choice_b": question.choice_b,
         "choice_c": question.choice_c,
         "choice_d": question.choice_d,
-        "answer": question.answer,
         "game": game.game_name
     }
 
+    # Teacher should also receive the answers so copy the dict and add it
+    message = message_for_students.copy()
+    message["answer"] = question.answer
+
     # Server sends client the data
     emit("question", message, room=teacher.username)
+    emit("question for students", message_for_students, room=teacher.username)
 
 # Server receives end game signal from client
 @socketio.on("end game")
@@ -464,10 +478,11 @@ def results():
 
         # Figure out the students score
         score = 0
-        for z in student_results:
+        for z in student_results["student_results"]:
             if z == True:
                 score = score + 1
-        student_results["score"] = 100 * score / len(game.question_list)
+                print("SCORE IN FOR = {}".format(score))
+        student_results["score"] = round(100 * score / len(game.question_list))
 
         results_of_all_students.append(student_results.copy())
 

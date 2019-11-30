@@ -8,32 +8,28 @@
 
   <h4>{{ teacher.name }}</h4>
 
-  <ol>
+  <strong>Results</strong><br>
+
+  <ul style="list-style-type:none;">
     {% for result in results %}
     <li>
-      {{ result.students_name }}: {{ result.score }}<br>
-      <ol>
-        {% for x in range(num_questions) %}
-          <li>
-            {{ result.questions_in_game[x] }}<br>
-            {{ result.student_answers[x] }}<br>
-            {{ result.student_results[x] }}
-          </li>
-        {% endfor %}
-      </ol>
+      <div class="game-questions">
+      {{ result.students_name }}: {{ result.score }}%<br>
+        <ol>
+          {% for x in range(num_questions) %}
+            <li>
+              Student answered {{ result.student_answers[x] }} -
+              {{ result.student_results[x] }}
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
     </li>
     {% endfor %}
-  </ol>
+  </ul>
 
 
-  <ol>
-    {% for student in students %}
-    <li>
-      {{ student.student_name}}: {{ student.results }}
-    </li>
-    {% endfor %}
-  </ol>
-
+  <br>
   <button id="end_game" class="btn btn-block btn-danger">END GAME</button>
 
   <!-- needed to get information into end_game.js -->

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // Listen for question sent from server
-  socket.on('question', data => {
+  socket.on('question for students', data => {
 
     document.getElementById('game_name').innerHTML = data.game;
     localStorage.setItem("game_student_playing", data.game);
