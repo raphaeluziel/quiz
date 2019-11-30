@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-import datetime
+#import datetime
 
 # To enable websockets in VPS
 import eventlet
@@ -9,7 +9,7 @@ from eventlet import wsgi
 
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify, flash
 from flask_session import Session
-from datetime import timedelta
+#from datetime import timedelta
 from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -26,9 +26,9 @@ if not os.getenv("QUIZDB_URL"):
 
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SESSION_PERMANENT"] = True
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
-app.config["SESSION_FILE_THRESHOLD"] = 100
+app.config["SESSION_PERMANENT"] = False
+#app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+#app.config["SESSION_FILE_THRESHOLD"] = 100
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 socketio = SocketIO(app)
@@ -391,12 +391,9 @@ def game(teacher):
 @socketio.on("play game")
 def message(data):
 
-    print("PLAY GAME DATA = {}".format(data))
-
-    teacher = db.execute("SELECT username FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
     question_number = data["question_number"]
-    game = db.execute("SELECT * FROM games WHERE game_name = :game_name AND teacher = :teacher", {"game_name":data['game_name'], "teacher":int(data['teacher_id'])}).fetchone()
-    print("GAME = {}".format(game))
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name AND teacher = :teacher", {"game_name":data['game_name'], "teacher":teacher.teacher_id}).fetchone()
     number_of_questions = len(game.question_list)
 
     if question_number < number_of_questions:
@@ -481,7 +478,6 @@ def results():
         for z in student_results["student_results"]:
             if z == True:
                 score = score + 1
-                print("SCORE IN FOR = {}".format(score))
         student_results["score"] = round(100 * score / len(game.question_list))
 
         results_of_all_students.append(student_results.copy())
