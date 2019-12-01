@@ -207,15 +207,8 @@ def create_new_game():
 
     if request.form.get("delete_question"):
 
-        sys.stdout.write("HEROKU I'M HERE")
-        print("RAPHAEL in DELETE")
-        sys.stdout.flush()
-
         # Find out which games contain the questions to be deleted
         games_affected = db.execute("SELECT * FROM games WHERE question_list @> :question_list", {"question_list":question_list}).fetchall()
-        sys.stdout.write("HEROKU I'M HERE after games affected")
-        print("games_affected = {}".format(games_affected))
-        sys.stdout.flush()
 
         # For each game, compare the list of questions to the list and remove them
         for game_affected in games_affected:
@@ -237,11 +230,11 @@ def delete_game():
 
     """ Delete a game """
 
-    sys.stdout.write("HEROKU I'M HERE in delete a game")
-    print("RAPHAEL in DELETE a GAMEEEEEEE")
-    #sys.stdout.flush()
-
     db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
+
+    print("HERE")
+    sys.stdout.write("game_name = {}".format(request.form.get("game_name"))\n)
+    print("OK")
 
     return redirect("/teacher")
 
