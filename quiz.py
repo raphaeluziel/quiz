@@ -231,6 +231,7 @@ def delete_game():
     """ Delete a game """
 
     db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
+    db.commit()
 
     print("HERE")
     sys.stdout.write("game_name = {}".format(request.form.get("game_name")))
