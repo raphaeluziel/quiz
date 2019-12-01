@@ -237,6 +237,10 @@ def delete_game():
 
     """ Delete a game """
 
+    sys.stdout.write("HEROKU I'M HERE in delete a game")
+    print("RAPHAEL in DELETE a GAMEEEEEEE")
+    #sys.stdout.flush()
+
     db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
 
     return redirect("/teacher")
