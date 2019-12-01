@@ -216,9 +216,9 @@ def create_new_game():
                 if x in question_list:
                     new_question_list.remove(x)
             db.execute("UPDATE games SET question_list = :question_list WHERE game_name = :game_name", {"question_list":new_question_list, "game_name":game_affected.game_name})
-            db.commit()
 
         db.execute("DELETE FROM questions WHERE question_id = ANY(:question_list)", {"question_list":question_list})
+        db.commit()
 
     return redirect("/teacher")
 
