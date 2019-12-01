@@ -9,7 +9,7 @@ from eventlet import wsgi
 
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify, flash
 from flask_session import Session
-#from datetime import timedelta
+from datetime import timedelta
 from flask_socketio import SocketIO, emit, rooms, join_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -159,31 +159,76 @@ def register():
 
 
 
-""" *********************** GAME CREATION SECTION ************************** """
+""" ******************* TEACHER GAME CREATION SECTION ********************** """
+
+@app.route("/teacher")
+@login_required
+def teacher():
+
+    """ This is the main page for the teacher to create games, add questions """
+
+    # Query database for information to display on the main teachedr page
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
+    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
+    games = db.execute("SELECT * FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
+
+    return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
+
 
 @app.route("/create_new_game", methods=["POST"])
 def create_new_game():
 
     """ Create a new game by supplying it's name, and a list of questions"""
 
-    # List of questions chosen for a particular game
+    # List of questions chosen
     question_list = []
 
     # Add all questions user chooses in form to this list
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
-    # Ensure teacher has not already created a game with that name
-    games = db.execute("SELECT game_name FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
-    for x in games:
-        if x.game_name == request.form.get("game_name"):
-            flash("That name is being used already", 'error')
+    if request.form.get("create_game"):
+        if request.form.get("game_name") == "":
+            flash("Please provide a name for your game", 'error')
             return redirect(url_for('teacher'))
+        else:
+            # Ensure teacher has not already created a game with that name
+            games = db.execute("SELECT game_name FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
+            for x in games:
+                if x.game_name == request.form.get("game_name"):
+                    flash("That name is being used already", 'error')
+                    return redirect(url_for('teacher'))
 
-    # Create game, add it to the database
-    db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
-               {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name"), "question_list":question_list})
-    db.commit()
+            # Create game, add it to the database
+            db.execute("INSERT INTO games (teacher, game_name, question_list) VALUES (:teacher, :game_name, :question_list)",
+                       {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name"), "question_list":question_list})
+            db.commit()
+
+    if request.form.get("delete_question"):
+
+        # Find out which games contain the questions to be deleted
+        games_affected = db.execute("SELECT * FROM games WHERE question_list @> :question_list", {"question_list":question_list}).fetchall()
+
+        # For each game, compare the list of questions to the list and remove them
+        for game_affected in games_affected:
+            new_question_list = game_affected.question_list.copy()
+            for x in new_question_list:
+                if x in question_list:
+                    new_question_list.remove(x)
+            db.execute("UPDATE games SET question_list = :question_list WHERE game_name = :game_name", {"question_list":new_question_list, "game_name":game_affected.game_name})
+            db.commit()
+
+        db.execute("DELETE FROM questions WHERE question_id = ANY(:question_list)", {"question_list":question_list})
+
+    return redirect("/teacher")
+
+
+@app.route("/delete_game", methods=["POST"])
+def delete_game():
+
+    """ Delete a game """
+
+    db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
 
     return redirect("/teacher")
 
@@ -205,20 +250,6 @@ def add_new_question():
     db.commit()
 
     return redirect("/teacher")
-
-
-@app.route("/teacher")
-@login_required
-def teacher():
-
-    """ This is the main page for the teacher to create games, add questions """
-
-    # Query database for information to display on the main teachedr page
-    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
-    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
-    games = db.execute("SELECT * FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
-
-    return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
 
 
 

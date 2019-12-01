@@ -1,6 +1,8 @@
-Allow teacher to delete games and/or questions in a game
-Use localstorage and sessions to remove some hidden inputs in html
+Allow teacher to edit games
 change .env removing FLASK_DEBUG
 Make accessible to screen readers
 
 HEROKU:
+git push heroku master
+heroku run import.py
+heroku pg:psql
