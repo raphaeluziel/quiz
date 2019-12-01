@@ -206,14 +206,22 @@ def create_new_game():
 
     if request.form.get("delete_question"):
 
+        sys.stdout.write("HEROKU I'M HERE")
+        print("RAPHAEL in DELETE")
+        sys.stdout.flush()
+
         # Find out which games contain the questions to be deleted
         games_affected = db.execute("SELECT * FROM games WHERE question_list @> :question_list", {"question_list":question_list}).fetchall()
+        sys.stdout.write("HEROKU I'M HERE after games affected")
+        print("games_affected = {}".format(games_affected))
+        sys.stdout.flush()
 
         # For each game, compare the list of questions to the list and remove them
         for game_affected in games_affected:
             new_question_list = game_affected.question_list.copy()
             for x in new_question_list:
                 if x in question_list:
+                    sys.stdout.write("Inside the loop")
                     new_question_list.remove(x)
             db.execute("UPDATE games SET question_list = :question_list WHERE game_name = :game_name", {"question_list":new_question_list, "game_name":game_affected.game_name})
 
