@@ -37,7 +37,7 @@ def main():
     for q in question:
         db.execute("INSERT INTO questions (teacher, question, choice_a, choice_b, choice_c, choice_d, answer) \
                    VALUES (:teacher, :question, :choice_a, :choice_b, :choice_c, :choice_d, :answer)",
-                   {"teacher": 2, "question":q[0], "choice_a":q[1], "choice_b":q[2], "choice_c":q[3], "choice_d":q[4], "answer":q[5]})
+                   {"teacher": 1, "question":q[0], "choice_a":q[1], "choice_b":q[2], "choice_c":q[3], "choice_d":q[4], "answer":q[5]})
 
         print('Added {} to database'.format({ q[0] })) # for older python versions
         db.commit()
