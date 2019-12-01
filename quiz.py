@@ -233,7 +233,8 @@ def delete_game():
     db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
 
     print("HERE")
-    sys.stdout.write("game_name = {}".format(request.form.get("game_name"))\n)
+    sys.stdout.write("game_name = {}".format(request.form.get("game_name")))
+    sys.stdout.write('\n')
     print("OK")
 
     return redirect("/teacher")
