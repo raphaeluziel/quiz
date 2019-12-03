@@ -20,6 +20,7 @@
       {% for question in questions %}
         <li>
           <div class="game-questions" id="question{{ question.id }}">
+            <button type="button" class="btn btn-sm btn-link">Send</button>
             {{ question.question}} <br>
             A) {{ question.choice_a }} <br>
             B) {{ question.choice_b }} <br>
