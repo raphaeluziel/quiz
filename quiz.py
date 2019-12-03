@@ -27,7 +27,7 @@ if not os.getenv("QUIZDB_URL"):
 
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
 app.config["SESSION_FILE_THRESHOLD"] = 500
 app.config["SESSION_TYPE"] = "filesystem"
@@ -233,11 +233,6 @@ def delete_game():
     db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
     db.commit()
 
-    print("HERE")
-    sys.stdout.write("game_name = {}".format(request.form.get("game_name")))
-    sys.stdout.write('\n')
-    print("OK")
-
     return redirect("/teacher")
 
 
@@ -258,7 +253,6 @@ def add_new_question():
     db.commit()
 
     return redirect("/teacher")
-
 
 
 """ *************************** STUDENT VIEW ****************************** """
