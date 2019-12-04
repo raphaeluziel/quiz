@@ -451,14 +451,38 @@ def message(data):
     emit("question", message, room=teacher.username)
     emit("question for students", message_for_students, room=teacher.username)
 
-# Server receives show results signal from teacher client
-@socketio.on("show results")
+# Server receives calculate results signal from teacher client
+@socketio.on("calculate results")
 def message(data):
 
+    print("student session = {}".format(session.get("student_id")))
+
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": teacher.active_game}).fetchone()
+    students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchall()
+
+    for student in students:
+
+        temp = student.questions_answered.copy()
+        temp.sort()
+        sorted_questions_answered = []
+        sorted_submitted_answers = []
+        sorted_results = []
+        for i in range(len(temp)):
+            index = student.questions_answered.index(temp[i])
+            sorted_questions_answered.append(student.questions_answered[index])
+            sorted_submitted_answers.append(student.submitted_answers[index])
+            sorted_results.append(student.results[index])
+
+        # Commit the sorted lists to the student's database
+        db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, results = :results \
+                    WHERE student_id = :student_id",
+                    {"questions_answered":sorted_questions_answered, "submitted_answers":sorted_submitted_answers,
+                    "results":sorted_results, "student_id":student.student_id})
+        db.commit()
 
     # Server sends signal that game is over
-    emit("see results", room=teacher.username)
+    emit("show results", room=teacher.username)
 
 # Server receives end game signal from client
 @socketio.on("end game")

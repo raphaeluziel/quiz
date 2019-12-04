@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-  socket.on('see results', function() {
+  socket.on('show results', function() {
     document.location.replace("/score");
   });
 

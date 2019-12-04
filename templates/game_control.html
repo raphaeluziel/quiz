@@ -9,9 +9,6 @@
   <h4>{{ teacher.name }}</h4>
   <h5>Game: {{ teacher.active_game }}</h5>
 
-  <strong>Question now in play:</strong>
-  <p id="active-question">No questions sent yet.</p>
-
   <strong>Questions in the game:</strong>
   {% if questions %}
     <ol id="upcoming_questions">
@@ -23,7 +20,9 @@
             B) {{ question.choice_b }} <br>
             C) {{ question.choice_c }} <br>
             D) {{ question.choice_d }} <br>
-            Correct Answer: <strong>{{ question.answer }}</strong>
+            Correct Answer: <strong>{{ question.answer }}</strong><br>
+            <button id="send_question{{ question.question_id }}" class="btn btn-sm btn-success">Send question</button>
+            <span id="has_question_been_sent"></span>
           </div>
         </li>
       {% endfor %}
@@ -32,7 +31,7 @@
     <p>This game has no questions associated with it.</p>
   {% endif %}
 
-  <button id="show_results" class="btn btn-block btn-danger">End Game / Show Results</button><br>
+  <button id="calculate_results" class="btn btn-block btn-danger">End Game / Calculate Results</button><br>
 
   <!-- needed to get information into game_control.js -->
   <div id="game_name" hidden>{{ teacher.active_game }}</div>

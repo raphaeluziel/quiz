@@ -27,8 +27,12 @@
 
     <div class="nav">
       <a href="{{ url_for('index') }}">home</a>
+      {% if not session.student_id %}
       <a href="{{ url_for('teacher') }}">teacher page</a>
+      {% endif %}
+      {% if not session.teacher_id %}
       <a href="{{ url_for('student') }}">student page</a>
+      {% endif %}
       {% if session.teacher_id %}
       <a href="{{ url_for('logout') }}">logout</a>
       {% endif %}

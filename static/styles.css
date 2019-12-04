@@ -28,7 +28,7 @@ h1{
   overflow: hidden;
   text-overflow: ellipsis;
 }
-div.game-questions:hover{
+.show-game-question{
   padding: 4px 10px;
   border-radius: 4px;
   background-color: #eef;
@@ -36,6 +36,16 @@ div.game-questions:hover{
   overflow: visible;
   height: 100%;
 }
+/*
+div.game-questions:active{
+  padding: 4px 10px;
+  border-radius: 4px;
+  background-color: #eef;
+  white-space: normal;
+  overflow: visible;
+  height: 100%;
+}
+*/
 .nav{
   background-color: #eef;
   max-width: 600px;
