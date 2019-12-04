@@ -394,30 +394,26 @@ def game(teacher):
         question_number = int(request.form.get("question_number"))
         question = db.execute("SELECT * FROM questions WHERE question_id =:question_number", {"question_number":question_number}).fetchone()
 
-        # Student has already submitted an answer to this question so:
-        # Find position in list of the question that was already answered
-        # then remove the question, answer, and result from the lists
-        # so that they can be appended to without duplication
-        if question_number in questions_answered_list:
-            index = questions_answered_list.index(question_number)
-            questions_answered_list.pop(index)
-            submitted_answers_list.pop(index)
-            results_list.pop(index)
+        # Student has not already submitted an answer to this question
+        if question_number not in questions_answered_list:
 
-        # Did the student get the answer correct?
-        if request.form.get("submitted_answer") == question.answer:
-            results_list.append(True)
+            # Did the student get the answer correct?
+            if request.form.get("submitted_answer") == question.answer:
+                results_list.append(True)
+            else:
+                results_list.append(False)
+
+            questions_answered_list.append(question_number)
+            submitted_answers_list.append(request.form.get("submitted_answer"))
+
+            db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
+                        results = :results WHERE student_id = :student_id",
+                        {"student_id": student.student_id, "questions_answered": questions_answered_list,
+                        "submitted_answers": submitted_answers_list, "results": results_list})
+            db.commit()
+
         else:
-            results_list.append(False)
-
-        questions_answered_list.append(question_number)
-        submitted_answers_list.append(request.form.get("submitted_answer"))
-
-        db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, \
-                    results = :results WHERE student_id = :student_id",
-                    {"student_id": student.student_id, "questions_answered": questions_answered_list,
-                    "submitted_answers": submitted_answers_list, "results": results_list})
-        db.commit()
+            message = "You already submitted an answer to this question."
 
     return render_template("game.html", question=question, student=student, teacher=teacher, game=game, message=message)
 
@@ -430,8 +426,17 @@ def game(teacher):
 def message(data):
 
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id":int(data['teacher_id'])}).fetchone()
-    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": int(data['question_id'])}).fetchone()
+    question_number = data["question_number"]
     game = db.execute("SELECT * FROM games WHERE game_name = :game_name AND teacher = :teacher", {"game_name":data['game_name'], "teacher":teacher.teacher_id}).fetchone()
+    number_of_questions = len(game.question_list)
+
+    if question_number < number_of_questions:
+        question_id = game.question_list[question_number]
+        question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id": question_id}).fetchone()
+    else:
+        message = {"game_id": game.game_id}
+        emit('see results', message, room=teacher.username)
+        return
 
     message_for_students = {
         "question_id": question.question_id,
@@ -450,15 +455,6 @@ def message(data):
     # Server sends client the data
     emit("question", message, room=teacher.username)
     emit("question for students", message_for_students, room=teacher.username)
-
-# Server receives show results signal from teacher client
-@socketio.on("show results")
-def message(data):
-
-    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
-
-    # Server sends signal that game is over
-    emit("see results", room=teacher.username)
 
 # Server receives end game signal from client
 @socketio.on("end game")
@@ -536,37 +532,10 @@ def score():
     # Student is not in session
     if student is None:
         return redirect("/student")
-    else:
-        print("student in score = {}".format(student))
-        """
-        # Reorder lists of student's results
-        temp = student.questions_answered.copy()
-        temp.sort()
-        sorted_questions_answered = []
-        sorted_submitted_answers = []
-        sorted_results = []
-        for i in range(len(temp)):
-            index = student.questions_answered.index(temp[i])
-            sorted_questions_answered.append(student.questions_answered[index])
-            sorted_submitted_answers.append(student.submitted_answers[index])
-            sorted_results.append(student.results[index])
-
-        # Commit the sorted lists to the student's database
-        db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, results = :results \
-                    WHERE student_id = :student_id",
-                    {"questions_answered":sorted_questions_answered, "submitted_answers":sorted_submitted_answers,
-                    "results":sorted_results, "student_id":session.get("student_id")})
-        db.commit()
-
-        #print("temp = {}".format(temp))
-        #print("sorted_questions_answered = {}".format(sorted_questions_answered))
-        #print("sorted_submitted_answers = {}".format(sorted_submitted_answers))
-        #print("sorted_results = {}".format(sorted_results))
-        #print("STUDENT = {}".format(student))
-        """
 
     # Something went wrong, session lost its game information
     if game is None:
+        print("OK, SOMETHING WENT WRONG - STUDENT IS IN SESSION, BUT HAS NO GAME ASSOCIATED WITH HIM/HER.")
         return redirect("/student")
 
     results_list = []

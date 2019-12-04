@@ -12,28 +12,29 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('join', {room: room_name});
   });
 
-  var question_number = 0;
-  var questionList = document.getElementById('upcoming_questions');
-  var questionListItems = questionList.getElementsByTagName('li');
-
-  document.querySelector('#submit_question').onclick = () => {
-
-    data = {
-      "message": "pushing question through game_control",
-      "question_number": question_number,
-      "game_name": document.querySelector("#game_name").innerHTML,
-      "teacher_id": document.querySelector("#teacher_id").innerHTML,
-    };
-    // Send question to the server
-    socket.emit('play game', data);
-
-    for (i = 0; i < questionListItems.length; i++){
-      questionListItems[i].removeAttribute("style");
+  // Listen for any clicks
+  document.addEventListener("click", function(e){
+    // Get the id of the element that is clicked
+    question_id = e.target.id;
+    // Test to see if the id of the element cicked was a question using a regex
+    if (/^question/.test(question_id)){
+      // Extract the number part of the question_id, and make it a number
+      question_id = parseInt(question_id.replace("question", ""), 10);
+      // Data to send to student
+      data = {
+        "question_id": question_id,
+        "game_name": document.querySelector("#game_name").innerHTML,
+        "teacher_id": document.querySelector("#teacher_id").innerHTML,
+      };
+      // Send question to the server
+      socket.emit('play game', data);
     }
-    if (question_number < questionListItems.length){
-      questionListItems[question_number].setAttribute("style", "background-color: #ffffc0;");
-    }
-    question_number += 1;
+  });
+
+  // Finish game and show results
+  document.getElementById("show_results").onclick = () => {
+    socket.emit('show results', {room: room_name});
+    document.location.replace("/results");
   };
 
   // Listen for question from server to display on teacher game control page
@@ -46,10 +47,5 @@ document.addEventListener('DOMContentLoaded', () => {
       '<br>&nbsp;&nbsp;&nbsp;&nbsp;(D) ' + data.choice_d +
       '<br>Answer: <strong>' + data.answer + '</strong>';
     });
-
-  // Listen for signal that all questions have been sent and go to results
-  socket.on('see results', data => {
-    document.location.replace("/results");
-  });
 
 });
