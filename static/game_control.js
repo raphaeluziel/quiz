@@ -1,3 +1,5 @@
+var questions_sent = [];
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // Start the socket connection
@@ -50,12 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
         "teacher_id": document.querySelector("#teacher_id").innerHTML,
       };
 
+
+
+
       document.getElementById("send_question" + question_id_number).onclick = () => {
-        questions_sent = JSON.parse(localStorage.getItem("questions_sent"));
-        question_id_number_as_string = question_id_number;
-        console.log("questions_sent", questions_sent);
-        console.log("question_id_as_string", question_id_number_as_string);
-        if (!(question_id_number_as_string in questions_sent)) {
+        //questions_sent = JSON.parse(localStorage.getItem("questions_sent"));
+        //question_id_number_as_string = question_id_number;
+        //console.log("questions_sent", questions_sent);
+        //console.log("question_id_as_string", question_id_number_as_string);
+
+        questions_sent.push(question_id_number);
+
+        console.log("QESTIONS SENT", questions_sent);
+
+        /*
+        if (!(question_id_number in questions_sent)) {
           questions_sent.push(question_id_number_as_string);
           localStorage.setItem("questions_sent", JSON.stringify(questions_sent));
         }
@@ -63,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log("elsing");
           document.getElementById("has_question_been_sent").innerHTML = "Question has been sent already, but you may send again.";
         }
+        */
+
         // Send question to the server
         socket.emit('play game', data);
       };
