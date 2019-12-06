@@ -175,6 +175,34 @@ def teacher():
 
     return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
 
+@app.route("/edit_question/<int:question_id>", methods=["GET", "POST"])
+@login_required
+def edit_question(question_id):
+
+    """ Edit a question """
+
+    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id":question_id}).fetchone()
+
+    if request.method == "POST":
+
+        # Insert question into database
+        db.execute("UPDATE questions SET question = :question, choice_a = :choice_a, choice_c = :choice_c, \
+                    choice_d = :choice_d, answer = :answer WHERE question_id = :question_id",
+                   {"question_id": question_id,
+                   "question":request.form.get("question"),
+                   "choice_a":request.form.get("choice_a"),
+                   "choice_b":request.form.get("choice_b"),
+                   "choice_c":request.form.get("choice_c"),
+                   "choice_d":request.form.get("choice_d"),
+                   "answer":request.form.get("answer")})
+        db.commit()
+
+        return redirect("/teacher")
+
+    else:
+        return render_template("question.html", question=question)
+
+
 
 @app.route("/create_new_game", methods=["POST"])
 def create_new_game():
