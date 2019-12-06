@@ -22,7 +22,7 @@
             D) {{ question.choice_d }} <br>
             Correct Answer: <strong>{{ question.answer }}</strong><br>
             <button id="send_question{{ question.question_id }}" class="btn btn-sm btn-success">Send question</button>
-            <span id="has_question_been_sent"></span>
+            <span id="has_question{{ question.question_id }}_been_sent"></span>
           </div>
         </li>
       {% endfor %}

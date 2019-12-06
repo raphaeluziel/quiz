@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  room_name = document.querySelector('#room_name').innerHTML;
+  var room_name = document.querySelector('#room_name').innerHTML;
   localStorage.setItem("room_student_is_in", room_name);
 
   // Start the socket connection
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "<input type='hidden' name='question_number' value='" + data.question_id + "'>" +
         "<input type='hidden' name='game_name' value='" + data.game + "'>" +
         "<br>" +
-        "<button type='submit' class='btn btn-primary btn-block'>Submit Answer</button>"
+        "<button type='submit' class='btn btn-primary btn-block'>Submit Answer</button>" +
       "</form>";
 
     });
