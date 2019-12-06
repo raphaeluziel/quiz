@@ -170,37 +170,10 @@ def teacher():
 
     # Query database for information to display on the main teachedr page
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
-    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
-    games = db.execute("SELECT * FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
+    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher ORDER BY question_id", {"teacher": session.get("teacher_id")}).fetchall()
+    games = db.execute("SELECT * FROM games WHERE teacher = :teacher ORDER BY game_id DESC", {"teacher": session.get("teacher_id")}).fetchall()
 
     return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
-
-@app.route("/edit_question/<int:question_id>", methods=["GET", "POST"])
-@login_required
-def edit_question(question_id):
-
-    """ Edit a question """
-
-    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id":question_id}).fetchone()
-
-    if request.method == "POST":
-
-        # Insert question into database
-        db.execute("UPDATE questions SET question = :question, choice_a = :choice_a, choice_c = :choice_c, \
-                    choice_d = :choice_d, answer = :answer WHERE question_id = :question_id",
-                   {"question_id": question_id,
-                   "question":request.form.get("question"),
-                   "choice_a":request.form.get("choice_a"),
-                   "choice_b":request.form.get("choice_b"),
-                   "choice_c":request.form.get("choice_c"),
-                   "choice_d":request.form.get("choice_d"),
-                   "answer":request.form.get("answer")})
-        db.commit()
-
-        return redirect("/teacher")
-
-    else:
-        return render_template("question.html", question=question)
 
 
 
@@ -208,6 +181,7 @@ def edit_question(question_id):
 def create_new_game():
 
     """ Create a new game by supplying it's name, and a list of questions"""
+    """ Questions can also be deleted here """
 
     # List of questions chosen
     question_list = []
@@ -253,6 +227,17 @@ def create_new_game():
     return redirect("/teacher")
 
 
+@app.route("/edit_game/<int:game_id>", methods=["GET", "POST"])
+@login_required
+def edit_game(game_id):
+
+    """ Edit a game """
+
+    game = db.execute("SELECT FROM games WHERE game_id = :game_id", {"game_id":game_id}).fetchone()
+
+    return render_template("edit_game.html", game=game)
+
+
 @app.route("/delete_game", methods=["POST"])
 def delete_game():
 
@@ -281,6 +266,34 @@ def add_new_question():
     db.commit()
 
     return redirect("/teacher")
+
+
+@app.route("/edit_question/<int:question_id>", methods=["GET", "POST"])
+@login_required
+def edit_question(question_id):
+
+    """ Edit a question """
+
+    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id":question_id}).fetchone()
+
+    if request.method == "POST":
+
+        # Insert question into database
+        db.execute("UPDATE questions SET question = :question, choice_a = :choice_a, choice_c = :choice_c, \
+                    choice_d = :choice_d, answer = :answer WHERE question_id = :question_id",
+                   {"question_id": question_id,
+                   "question":request.form.get("question"),
+                   "choice_a":request.form.get("choice_a"),
+                   "choice_b":request.form.get("choice_b"),
+                   "choice_c":request.form.get("choice_c"),
+                   "choice_d":request.form.get("choice_d"),
+                   "answer":request.form.get("answer")})
+        db.commit()
+
+        return redirect("/teacher")
+
+    else:
+        return render_template("question.html", question=question)
 
 
 """ *************************** STUDENT VIEW ****************************** """
@@ -362,7 +375,7 @@ def game_control(teacher, game_name):
 
     # Query database for information to display on the game control page
     game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session.get("teacher_id")}).fetchone()
-    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
+    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list) ORDER BY question_id", {"question_list":game.question_list}).fetchall()
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
 
     # If teacher gets here via a get, and the game does not exist redirect them
