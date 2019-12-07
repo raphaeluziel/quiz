@@ -233,9 +233,17 @@ def edit_game(game_id):
 
     """ Edit a game """
 
-    game = db.execute("SELECT FROM games WHERE game_id = :game_id", {"game_id":game_id}).fetchone()
+    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id":game_id}).fetchone()
+    questions = db.execute("SELECT * FROM questions ORDER BY question_id", {"question_list":game.question_list}).fetchall()
+    teacher = db.execute("SELECT username FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchone()
+    question_list = game.question_list
 
-    return render_template("edit_game.html", game=game)
+    if request.method == "POST":
+        print("HELLO")
+        return redirect ("/game_control/teacher.username/game.game_name")
+
+
+    return render_template("edit_game.html", game=game, questions=questions, question_list=question_list)
 
 
 @app.route("/delete_game", methods=["POST"])
