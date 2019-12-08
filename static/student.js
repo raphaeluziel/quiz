@@ -46,4 +46,26 @@ document.addEventListener('DOMContentLoaded', () => {
   teacherhttp.open("GET", "teacherAPI", true);
   teacherhttp.send();
 
+  document.getElementById("student_joins_room").onsubmit = function(){
+
+    // Start the socket connection
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    room_name = document.getElementById("teacher_selected").value;
+    student_name = document.getElementById("student_chosen_name").value;
+    localStorage.setItem("room_student_is_in", room_name);
+
+    data = {
+      "room": room_name,
+      "student": student_name
+    }
+
+    // Let server know which room (teacher username) the student is trying to join
+    socket.on('connect', function() {
+      alert(data.student);
+      socket.emit('join', data);
+    });
+
+  };
+
 });

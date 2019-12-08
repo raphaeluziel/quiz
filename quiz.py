@@ -186,7 +186,7 @@ def create_new_game():
     # List of questions chosen
     question_list = []
 
-    # Add all questions user chooses in form to this list
+    # Add all questions user chooses in form to this list as integers
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
@@ -234,14 +234,24 @@ def edit_game(game_id):
     """ Edit a game """
 
     game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id":game_id}).fetchone()
-    questions = db.execute("SELECT * FROM questions ORDER BY question_id", {"question_list":game.question_list}).fetchall()
+    questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher ORDER BY question_id", {"teacher":session.get("teacher_id")}).fetchall()
     teacher = db.execute("SELECT username FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchone()
-    question_list = game.question_list
+
+    # Add all questions user chooses in form to this list as integers
+    question_list = []
+    for i in request.form.getlist("questions"):
+        question_list.append(int(i))
 
     if request.method == "POST":
-        print("HELLO")
-        return redirect ("/game_control/teacher.username/game.game_name")
 
+        db.execute("UPDATE games SET game_name = :game_name, question_list = :question_list WHERE game_id = :game_id",
+                    {"game_name":request.form.get("game_name"), "question_list":question_list, "game_id":game_id})
+        db.commit()
+        game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id":game_id}).fetchone()
+
+        return redirect("/game_control/" + teacher.username + "/" + game.game_name)
+
+    question_list = game.question_list
 
     return render_template("edit_game.html", game=game, questions=questions, question_list=question_list)
 
@@ -545,6 +555,7 @@ def message(data):
 # Join a room
 @socketio.on("join")
 def message(data):
+    print(data)
     join_room(data["room"])
 
 

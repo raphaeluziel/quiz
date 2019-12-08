@@ -2,6 +2,8 @@ Allow teacher to edit games
 clear students in every game  that teacher has when teacher begins a game
 change .env removing FLASK_DEBUG
 Make accessible to screen readers
+Error if end game when no questions are sent
+Make TEST user
 
 HEROKU:
 git push heroku master

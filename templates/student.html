@@ -11,12 +11,12 @@
 
 <br>
 <h4>Choose a name for yourself, or your team:</h4>
-<form action="{{ url_for('add_new_student') }}" method="post">
+<form action="{{ url_for('add_new_student') }}" id="student_joins_room" method="post">
   <div class="form-group">
-    <input class="typeahead" type="text" class="form-control" name="student" placeholder="Choose a username or team name" required>
+    <input class="typeahead" type="text" class="form-control" name="student" placeholder="Choose a username or team name" id="student_chosen_name" required>
   </div>
   <div  id="teacher_search" class="form-group">
-    <input class="typeahead" type="text" name="teacher" placeholder="Search for your teacher" autocomplete="off" required>
+    <input class="typeahead" type="text" name="teacher" placeholder="Search for your teacher" autocomplete="off" id="teacher_selected" required>
   </div>
   <button type="submit" class="btn btn-primary">Go to game</button>
 </form>

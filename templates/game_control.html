@@ -9,6 +9,38 @@
   <h4>{{ teacher.name }}</h4>
   <h5>Game: {{ teacher.active_game }}</h5>
 
+  <div class="flex-container">
+    <div class="game-control">
+      <strong>Questions in the game:</strong>
+      {% if questions %}
+        <ol id="upcoming_questions">
+          {% for question in questions %}
+            <li>
+              <div class="game-questions" id="question{{ question.question_id }}">
+                {{ question.question}} <br>
+                A) {{ question.choice_a }} <br>
+                B) {{ question.choice_b }} <br>
+                C) {{ question.choice_c }} <br>
+                D) {{ question.choice_d }} <br>
+                Correct Answer: <strong>{{ question.answer }}</strong><br>
+                <button id="send_question{{ question.question_id }}" class="btn btn-sm btn-success">Send question</button>
+                <span id="has_question{{ question.question_id }}_been_sent"></span>
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p>This game has no questions associated with it.</p>
+      {% endif %}
+
+      <button id="calculate_results" class="btn btn-block btn-danger">End Game / Calculate Results</button><br>
+    </div>
+    <div class="student-results">
+      YOU
+    </div>
+  </div>
+
+
   <strong>Questions in the game:</strong>
   {% if questions %}
     <ol id="upcoming_questions">

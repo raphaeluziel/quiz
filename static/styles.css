@@ -4,12 +4,17 @@ body {
 h1{
   text-align: center;
 }
-
+.main{
+  max-width: 1300px;
+  margin: 0 auto;
+}
+.flex-container{
+  display: flex;
+}
 .error{
   color: red;
   font-size: 1.2em;
 }
-
 .form-check{
   margin-left: 20px;
 }
@@ -20,6 +25,15 @@ h1{
 .form-check-label{
   margin-left: 6px;
   padding: 3px 0;
+}
+.game-control{
+  width: 70%;
+  margin-right: 2%;
+  background-color:lightblue;
+}
+.student-results{
+  width: 25%;
+  background-color:salmon;
 }
 .game-questions{
   cursor: pointer;

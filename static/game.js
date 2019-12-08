@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   var room_name = document.querySelector('#room_name').innerHTML;
-  localStorage.setItem("room_student_is_in", room_name);
 
   // Start the socket connection
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
