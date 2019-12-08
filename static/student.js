@@ -45,11 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   teacherhttp.open("GET", "teacherAPI", true);
   teacherhttp.send();
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Start the socket connection
+  var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+  // Let server know which room (teacher username) the student is trying to join
+  socket.on('connect', function() {
+    alert("connected to server");
+  });
 
   document.getElementById("student_joins_room").onsubmit = function(){
 
-    // Start the socket connection
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    alert("ONE");
 
     room_name = document.getElementById("teacher_selected").value;
     student_name = document.getElementById("student_chosen_name").value;
@@ -60,11 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
       "student": student_name
     }
 
-    // Let server know which room (teacher username) the student is trying to join
-    socket.on('connect', function() {
-      alert(data.student);
-      socket.emit('join', data);
-    });
+    alert(data.student + " joined");
+
+    socket.emit('join', data);
 
   };
 

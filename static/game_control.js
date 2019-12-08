@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('join', {room: room_name});
   });
 
+  var students_in_room = [];
+
+  // Listen from server when student joins room
+  socket.on('show students in room', function(data) {
+    console.log(data);
+    students_in_room.push(data.student);
+    document.getElementById("show_students_in_room").innerHTML = students_in_room;
+  });
+
   // Get number of questions in game by searching the HTML:
   var num_questions = document.getElementById("upcoming_questions").getElementsByTagName("li").length;
 

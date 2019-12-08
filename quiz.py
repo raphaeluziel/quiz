@@ -510,6 +510,7 @@ def message(data):
     emit("question", message, room=teacher.username)
     emit("question for students", message_for_students, room=teacher.username)
 
+
 # Server receives calculate results signal from teacher client
 @socketio.on("calculate results")
 def message(data):
@@ -555,8 +556,9 @@ def message(data):
 # Join a room
 @socketio.on("join")
 def message(data):
-    print(data)
+    print("HELLISH = {}".format(data))
     join_room(data["room"])
+    emit("show students in room", data, room=data["room"])
 
 
 """ **************************** SHOW RESULTS ****************************** """
