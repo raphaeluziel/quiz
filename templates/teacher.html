@@ -14,7 +14,11 @@
         {% for game in games %}
           <li>
             <div class="form-inline">
-              <a href="{{ url_for('game_control', teacher=teacher.username, game_name=game.game_name) }}">{{ game.game_name }}</a>
+              <span><strong>{{ game.game_name }}:&nbsp;&nbsp;</strong></span>
+              <a href="{{ url_for('game_control', teacher=teacher.username, game_name=game.game_name) }}">[resume]</a>
+              <form class="form-inline" action="{{ url_for('game_control', teacher=teacher.username, game_name=game.game_name) }}" method="post">
+                <button class="btn btn-link" type="submit" name="play" value="play">[<u>play from beginning</u>]</button>
+              </form>
               <form class="form-inline" action="{{ url_for('delete_game') }}" method="post">
                 <!--<button class="btn" type="submit" name="game_name" value="{{ game.game_name }}"><i class="fa fa-trash"></i></button>-->
                 <button class="btn btn-link" type="submit" name="game_name" value="{{ game.game_name }}">[<u>delete</u>]</button>

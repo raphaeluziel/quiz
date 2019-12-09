@@ -396,6 +396,13 @@ def game_control(teacher, game_name):
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list) ORDER BY question_id", {"question_list":game.question_list}).fetchall()
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
 
+    print(request.form)
+
+    if request.form.get("play") == "play":
+        db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
+        db.execute("UPDATE games SET students = :students", {"students":[]})
+        db.commit()
+
     # If teacher gets here via a get, and the game does not exist redirect them
     # back to the teacher page, otherwise add the game name to the active game
     if game is None:
@@ -556,7 +563,6 @@ def message(data):
 # Join a room
 @socketio.on("join")
 def message(data):
-    print("HELLISH = {}".format(data))
     join_room(data["room"])
     emit("show students in room", data, room=data["room"])
 

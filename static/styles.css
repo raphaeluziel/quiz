@@ -4,6 +4,9 @@ body {
 h1{
   text-align: center;
 }
+a{
+  text-decoration: underline;
+}
 .main{
   max-width: 1300px;
   margin: 0 auto;
@@ -71,7 +74,7 @@ div.game-questions:active{
 }
 .nav a{
   color: darkred;
-  text-decoration: none;
+  text-decoration: none
   display: block;
 }
 .nav a:hover{
