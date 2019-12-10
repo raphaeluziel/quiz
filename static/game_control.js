@@ -19,9 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Listen from server when student joins room
   socket.on('show students in room', function(data) {
+    document.getElementById("show_students_in_room").innerHTML = "";
     students_in_room.push(data.student);
     var ol = document.createElement("ol");
-    for (var i = 0; i < data.student.length; i++){
+    for (var i = 0; i < students_in_room.length; i++){
       var li = document.createElement("li")
       li.innerHTML = students_in_room[i];
       ol.append(li)

@@ -564,7 +564,9 @@ def message(data):
 @socketio.on("join")
 def message(data):
     join_room(data["room"])
-    emit("show students in room", data, room=data["room"])
+    if "student" in data:
+        print("yes, student is in data")
+        emit("show students in room", data, room=data["room"])
 
 
 """ **************************** SHOW RESULTS ****************************** """
