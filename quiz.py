@@ -255,16 +255,17 @@ def edit_game(game_id):
 
     return render_template("edit_game.html", game=game, questions=questions, question_list=question_list)
 
-
+"""
 @app.route("/delete_game", methods=["POST"])
 def delete_game():
 
-    """ Delete a game """
+
 
     db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
     db.commit()
 
     return redirect("/teacher")
+"""
 
 
 @app.route("/add_new_question", methods=["POST"])
@@ -395,13 +396,23 @@ def game_control(teacher, game_name):
     game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session.get("teacher_id")}).fetchone()
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list) ORDER BY question_id", {"question_list":game.question_list}).fetchall()
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
+    students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher", {"teacher": teacher.teacher_id}).fetchall()
 
-    print(request.form)
-
+    """
     if request.form.get("play") == "play":
         db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
         db.execute("UPDATE games SET students = :students", {"students":[]})
+    """
+
+    if request.form.get("action") == "play":
+        db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
+        db.execute("UPDATE games SET students = :students", {"students":[]})
         db.commit()
+
+    if request.form.get("action") == "delete":
+        db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":game_name})
+        db.commit()
+        return redirect("/teacher")
 
     # If teacher gets here via a get, and the game does not exist redirect them
     # back to the teacher page, otherwise add the game name to the active game
@@ -412,7 +423,7 @@ def game_control(teacher, game_name):
         db.commit()
         teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
 
-    return render_template("game_control.html", questions=questions, teacher=teacher)
+    return render_template("game_control.html", questions=questions, teacher=teacher, students=students)
 
 
 @app.route("/game/<string:teacher>", methods=["GET", "POST"])

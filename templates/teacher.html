@@ -8,6 +8,28 @@
 
   <h1>Welcome, {{ teacher.name }}</h1>
 
+  <hr>
+  {% if games %}
+    <h4>Choose a game 222:</h4>
+    <ul>
+        {% for game in games %}
+          <li>
+            <form class="form-inline" action="{{ url_for('game_control', teacher=teacher.username, game_name=game.game_name) }}" method="post">
+              <span><strong>{{ game.game_name }}:&nbsp;&nbsp;</strong></span>
+              <button class="btn btn-link" type="submit" name="action" value="play">[<u>play from beginning</u>]</button>
+              <button class="btn btn-link" type="submit" name="action" value="resume">[<u>resume</u>]</button>
+              <button class="btn btn-link" type="submit" name="action" value="edit">[<u>edit</u>]</button>
+              <button class="btn btn-link" type="submit" name="action" value="delete">[<u>delete</u>]</button>
+            </form>
+          </li>
+       {% endfor %}
+    </ul>
+  {% else %}
+     <p>To begin, you need to create a game first.</p>
+  {% endif %}
+  <hr>
+
+<!--
   {% if games %}
     <h4>Choose a game:</h4>
     <ul>
@@ -19,8 +41,8 @@
               <form class="form-inline" action="{{ url_for('game_control', teacher=teacher.username, game_name=game.game_name) }}" method="post">
                 <button class="btn btn-link" type="submit" name="play" value="play">[<u>play from beginning</u>]</button>
               </form>
-              <form class="form-inline" action="{{ url_for('delete_game') }}" method="post">
-                <!--<button class="btn" type="submit" name="game_name" value="{{ game.game_name }}"><i class="fa fa-trash"></i></button>-->
+              <form class="form-inline" action="" method="post">
+                <!--<button class="btn" type="submit" name="game_name" value="{{ game.game_name }}"><i class="fa fa-trash"></i></button>
                 <button class="btn btn-link" type="submit" name="game_name" value="{{ game.game_name }}">[<u>delete</u>]</button>
                 <a href="{{ url_for('edit_game', game_id=game.game_id )}}"> [edit]</a>
               </form>
@@ -31,6 +53,7 @@
   {% else %}
      <p>To begin, you need to create a game first.</p>
   {% endif %}
+-->
 
   {% if questions %}
     <h4>Create a game:</h4>

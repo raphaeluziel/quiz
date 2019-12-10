@@ -35,9 +35,17 @@
 
       <button id="calculate_results" class="btn btn-block btn-danger">End Game / Calculate Results</button><br>
     </div>
-    <div class="student-results" id="show_students_in_room">
-      YOU
-    </div>
+
+    <div class="student-results" id="show_students_in_room"></div>
+
+    <hr>
+
+    <ol>
+      {% for student in students %}
+        <li>{{ student.student_name }}</li>
+      {% endfor %}
+    </ol>
+
   </div>
 
 
