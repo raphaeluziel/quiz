@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       socket.emit('join', data);
       console.log("I made it here", "/game/" + teacher_selected);
       //document.location.replace("/game/" + teacher_selected);
+      document.location.href = "/add_new_student";
     }
     else{
       document.getElementById("error_message").innerHTML = "Name is already being used";
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // OK, all good, student proceeds to gam
   socket.on("student goes to game", function(data){
-    
+
   });
 
 });
