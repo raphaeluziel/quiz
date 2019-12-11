@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("send_question" + question_id).classList.remove("btn-success");
         document.getElementById("send_question" + question_id).classList.add("btn-warning");
         document.getElementById("send_question" + question_id).innerHTML = "Resend Question";
-        console.log("HELL");
       }
 
       // Handle send question button clicks

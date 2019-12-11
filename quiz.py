@@ -255,18 +255,6 @@ def edit_game(game_id):
 
     return render_template("edit_game.html", game=game, questions=questions, question_list=question_list)
 
-"""
-@app.route("/delete_game", methods=["POST"])
-def delete_game():
-
-
-
-    db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name")})
-    db.commit()
-
-    return redirect("/teacher")
-"""
-
 
 @app.route("/add_new_question", methods=["POST"])
 def add_new_question():
@@ -372,17 +360,6 @@ def add_new_student():
     return redirect(game_url)
 
 
-# Return a json object of all the teachers in the database (for typeahead use)
-@app.route("/teacherAPI")
-def teacherAPI():
-    teacher_list = []
-    teachers = db.execute("SELECT username FROM teachers").fetchall()
-    for x in teachers:
-        teacher_list.append(x.username)
-    teacherJSON = jsonify(teacher_list)
-    return teacherJSON
-
-
 
 """ *********************** GAME CONTROL AND PLAY ************************** """
 
@@ -436,6 +413,9 @@ def game(teacher):
     question_number = 0
     question = None
     message = ""
+
+    print("in game/uziel")
+    print("yes = {}".format(session))
 
     # Get the student if in session, otherwise redirect to student page to "log in"
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
@@ -575,9 +555,41 @@ def message(data):
 @socketio.on("join")
 def message(data):
     join_room(data["room"])
+
+    teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":data["room"]}).fetchone()
+
     if "student" in data:
-        print("yes, student is in data")
+        db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
+                    {"student_name":data["student"], "students_teacher":teacher.teacher_id})
+        db.commit()
+
+        # Log user in automatically after registering
+        student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name":data["student"]}).fetchone()
+        #session["student_id"] = student.student_id
+        print("SESSION IN 569 = {}".format(session))
+        emit("student goes to game", data, room=data["room"])
         emit("show students in room", data, room=data["room"])
+
+# Join a room
+@socketio.on("request teacher list")
+def message():
+    teacher_list = []
+    teachers = db.execute("SELECT username FROM teachers").fetchall()
+    for x in teachers:
+        teacher_list.append(x.username)
+    data = {"teachers":teacher_list}
+    emit("teacher list", data)
+
+# Join a room
+@socketio.on("request student list")
+def message(data):
+    student_list = []
+    teacher = db.execute("SELECT teacher_id FROM teachers WHERE username = :username", {"username":data["teacher"]}).fetchone()
+    students = db.execute("SELECT student_name FROM students WHERE students_teacher = :teacher", {"teacher":teacher.teacher_id}).fetchall()
+    for x in students:
+        student_list.append(x.student_name)
+    data = {"students":student_list}
+    emit("student list", data)
 
 
 """ **************************** SHOW RESULTS ****************************** """
@@ -641,34 +653,6 @@ def score():
     # Student is not in session
     if student is None:
         return redirect("/student")
-    else:
-        print("student in score = {}".format(student))
-        """
-        # Reorder lists of student's results
-        temp = student.questions_answered.copy()
-        temp.sort()
-        sorted_questions_answered = []
-        sorted_submitted_answers = []
-        sorted_results = []
-        for i in range(len(temp)):
-            index = student.questions_answered.index(temp[i])
-            sorted_questions_answered.append(student.questions_answered[index])
-            sorted_submitted_answers.append(student.submitted_answers[index])
-            sorted_results.append(student.results[index])
-
-        # Commit the sorted lists to the student's database
-        db.execute("UPDATE students SET questions_answered = :questions_answered, submitted_answers = :submitted_answers, results = :results \
-                    WHERE student_id = :student_id",
-                    {"questions_answered":sorted_questions_answered, "submitted_answers":sorted_submitted_answers,
-                    "results":sorted_results, "student_id":session.get("student_id")})
-        db.commit()
-
-        #print("temp = {}".format(temp))
-        #print("sorted_questions_answered = {}".format(sorted_questions_answered))
-        #print("sorted_submitted_answers = {}".format(sorted_submitted_answers))
-        #print("sorted_results = {}".format(sorted_results))
-        #print("STUDENT = {}".format(student))
-        """
 
     # Something went wrong, session lost its game information
     if game is None:

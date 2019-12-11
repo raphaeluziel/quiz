@@ -9,17 +9,18 @@
 <script type="text/javascript" src="/static/student.js"></script>
 <link rel="stylesheet" href="/static/typeahead.css">
 
-<br>
-<h4>Choose a name for yourself, or your team:</h4>
-<form action="{{ url_for('add_new_student') }}" id="student_joins_room" method="post">
-  <div class="form-group">
-    <input class="typeahead" type="text" class="form-control" name="student" placeholder="Choose a username or team name" id="student_chosen_name" required>
-  </div>
-  <div  id="teacher_search" class="form-group">
-    <input class="typeahead" type="text" name="teacher" placeholder="Search for your teacher" autocomplete="off" id="teacher_selected" required>
-  </div>
-  <button type="submit" class="btn btn-primary">Go to game</button>
-</form>
+<div  id="teacher_search" class="form-group form-inline">
+  <input class="typeahead" type="text" name="teacher" placeholder="Search for your teacher" autocomplete="off" id="teacher_selected">&nbsp;&nbsp;
+  <button class="btn btn-info btn-lg" type="button" id="select_teacher">Next</button>
+</div>
+
+<div id="student_name" class="form-group form-inline" style="visibility:hidden">
+  <input class="typeahead" type="text" class="form-control" name="student" placeholder="Choose a username or team name" id="student_chosen_name">&nbsp;&nbsp;
+  <button class="btn btn-info btn-lg" type="button" id="choose_name">Next</button>
+</div>
+
+<p id="error_message" class="error"></p>
+
 
 <br>
 <p>{{ message }}</p>
