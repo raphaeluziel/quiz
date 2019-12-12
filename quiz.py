@@ -332,27 +332,20 @@ def add_new_student():
 
     """ Add new student """
 
-    # Find the teacher in the database that the student has selected
+    # Log user in automatically after registering
+    print("REQUEST = {}".format(request.form))
+
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":request.form.get("teacher")}).fetchone()
 
-    # If teacher is not found send student back to the student page
-    if teacher is None:
-        return render_template("student.html", message="No teacher by that username in our database")
+    db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
+                {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
+    db.commit()
 
-    # Try to add student into database unless the name is already being used
-    try:
-        db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
-                    {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
-        db.commit()
+    student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
+    print("STUDENT = {}".format(student))
+    session["student_id"] = student.student_id
 
-        # Log user in automatically after registering
-        student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
-        session["student_id"] = student.student_id
 
-    # This part is reached if student in session is not the same as the name the
-    # student is sending with the form, and that name is already being used
-    except:
-        return render_template("student.html", message="Name is already being used")
 
     # Redirect to the game page and teacher room
     game_url = "/game/" + request.form.get("teacher")
@@ -374,12 +367,6 @@ def game_control(teacher, game_name):
     questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list) ORDER BY question_id", {"question_list":game.question_list}).fetchall()
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
     students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher", {"teacher": teacher.teacher_id}).fetchall()
-
-    """
-    if request.form.get("play") == "play":
-        db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
-        db.execute("UPDATE games SET students = :students", {"students":[]})
-    """
 
     if request.form.get("action") == "play":
         db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
@@ -559,15 +546,12 @@ def message(data):
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":data["room"]}).fetchone()
 
     if "student" in data:
-        db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
-                    {"student_name":data["student"], "students_teacher":teacher.teacher_id})
-        db.commit()
+
 
         # Log user in automatically after registering
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name":data["student"]}).fetchone()
-        #session["student_id"] = student.student_id
-        print("SESSION IN 569 = {}".format(session))
-        emit("student goes to game", data, room=data["room"])
+
+        #
         emit("show students in room", data, room=data["room"])
 
 # Join a room

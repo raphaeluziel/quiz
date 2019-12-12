@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  document.getElementById("choose_name").addEventListener("click", function(){
+  document.getElementById("choose_name").addEventListener("submit", function(){
 
     student_name = document.getElementById("student_chosen_name").value;
 
@@ -98,19 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         "student": student_name
       }
       socket.emit('join', data);
-      console.log("I made it here", "/game/" + teacher_selected);
-      //document.location.replace("/game/" + teacher_selected);
-      document.location.href = "/add_new_student";
+
     }
     else{
       document.getElementById("error_message").innerHTML = "Name is already being used";
       student_name = "";
+      event.preventDefault();
     }
-
-  });
-
-  // OK, all good, student proceeds to gam
-  socket.on("student goes to game", function(data){
 
   });
 

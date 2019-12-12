@@ -9,15 +9,19 @@
 <script type="text/javascript" src="/static/student.js"></script>
 <link rel="stylesheet" href="/static/typeahead.css">
 
-<div  id="teacher_search" class="form-group form-inline">
-  <input class="typeahead" type="text" name="teacher" placeholder="Search for your teacher" autocomplete="off" id="teacher_selected">&nbsp;&nbsp;
-  <button class="btn btn-info btn-lg" type="button" id="select_teacher">Next</button>
-</div>
+<form action="{{ url_for('add_new_student') }}" method="post">
 
-<div id="student_name" class="form-group form-inline" style="visibility:hidden">
-  <input class="typeahead" type="text" class="form-control" name="student" placeholder="Choose a username or team name" id="student_chosen_name">&nbsp;&nbsp;
-  <button class="btn btn-info btn-lg" type="button" id="choose_name">Next</button>
-</div>
+  <div  id="teacher_search" class="form-group form-inline">
+    <input class="typeahead" type="text" name="teacher" placeholder="Search for your teacher" autocomplete="off" id="teacher_selected">&nbsp;&nbsp;
+    <button class="btn btn-info btn-lg" type="button" id="select_teacher">Next</button>
+  </div>
+
+  <div id="student_name" class="form-group form-inline" style="visibility:hidden">
+    <input class="typeahead" type="text" class="form-control" name="student" placeholder="Choose a username or team name" id="student_chosen_name">&nbsp;&nbsp;
+    <button class="btn btn-info btn-lg" type="submit" id="choose_name">Next</button>
+  </div>
+
+</form>
 
 <p id="error_message" class="error"></p>
 
