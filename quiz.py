@@ -110,9 +110,26 @@ def login():
 @app.route("/logout")
 def logout():
 
-    """Log teacher out"""
+    """Log out"""
 
-    # Forget teacher's user ID:
+    # Query database for student to be deleted
+    student_to_be_deleted = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
+    print(student_to_be_deleted)
+
+    # See if the student is in a game
+    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student_to_be_deleted.students_active_game}).fetchone()
+
+    if game is not None:
+        students_in_game = game.students
+        students_in_game.remove(student_to_be_deleted.student_id)
+        db.execute("UPDATE games SET students = :students_in_game WHERE game_id = :game_id", {"students_in_game":students_in_game, "game_id":game.game_id})
+        db.commit()
+
+    # If it's a student, delete from databsase
+    db.execute("DELETE from students WHERE student_id = :student_id", {"student_id":session.get("student_id")})
+    db.commit()
+
+    # Forget teacher's user ID or student's ID:
     session.clear()
 
     # Send user back to home page
