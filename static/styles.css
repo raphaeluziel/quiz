@@ -53,8 +53,7 @@ a{
   overflow: visible;
   height: 100%;
 }
-/*
-div.game-questions:active{
+div.game-questions:hover{
   padding: 4px 10px;
   border-radius: 4px;
   background-color: #eef;
@@ -62,7 +61,6 @@ div.game-questions:active{
   overflow: visible;
   height: 100%;
 }
-*/
 .nav{
   background-color: #eef;
   max-width: 600px;
