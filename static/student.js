@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
   var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
 
   // Upon connecting to server get list of teachers for typeahead
+  socket.on('disconnect', function() {
+    socket.emit('leave room');
+  });
+
+  // Upon connecting to server get list of teachers for typeahead
   socket.on('connect', function() {
     socket.emit('request teacher list');
   });
@@ -81,7 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  document.getElementById("choose_name").addEventListener("submit", function(){
+  document.getElementById("choose_name").addEventListener("click", function(){
+
+    console.log("HERE");
+
 
     student_name = document.getElementById("student_chosen_name").value;
 
@@ -97,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         "room": teacher_selected,
         "student": student_name
       }
+
+      console.log("DATA", data);
+
       socket.emit('join', data);
 
     }

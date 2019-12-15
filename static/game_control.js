@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Listen from server when student joins room
   socket.on('show students in room', function(data) {
+    console.log("SHOW STUDENTS IN ROOM IS ACTIVATED");
     document.getElementById("show_students_in_room").innerHTML = "";
     students_in_room.push(data.student);
     var ol = document.createElement("ol");
@@ -90,6 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Listen to server for signal that results are ready to display
   socket.on('show results', function() {
     document.location.replace("/results");
+  });
+
+  socket.on('hey there', function(){
+    console.log("YO THERE");
   });
 
 });

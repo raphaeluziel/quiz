@@ -11,7 +11,7 @@ from eventlet import wsgi
 from flask import Flask, Response, render_template, request, redirect, session, url_for, jsonify, flash
 from flask_session import Session
 from datetime import timedelta
-from flask_socketio import SocketIO, emit, rooms, join_room
+from flask_socketio import SocketIO, emit, rooms, join_room, leave_room
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -28,7 +28,7 @@ if not os.getenv("QUIZDB_URL"):
 # Setup connections for sockets and main app
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["SESSION_PERMANENT"] = True
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=3)
 app.config["SESSION_FILE_THRESHOLD"] = 500
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -112,28 +112,28 @@ def logout():
 
     """Log out"""
 
-    # Query database for student to be deleted
+    # If student initiates logout, find student in database
     student_to_be_deleted = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
-    print(student_to_be_deleted)
 
-    # See if the student is in a game
-    game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student_to_be_deleted.students_active_game}).fetchone()
+    # If teacher has not already removed student from game, then do it
+    if student_to_be_deleted is not None:
+        game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student_to_be_deleted.students_active_game}).fetchone()
 
-    if game is not None:
-        students_in_game = game.students
-        students_in_game.remove(student_to_be_deleted.student_id)
-        db.execute("UPDATE games SET students = :students_in_game WHERE game_id = :game_id", {"students_in_game":students_in_game, "game_id":game.game_id})
+        if game is not None:
+            students_in_game = game.students
+            students_in_game.remove(student_to_be_deleted.student_id)
+            db.execute("UPDATE games SET students = :students_in_game WHERE game_id = :game_id", {"students_in_game":students_in_game, "game_id":game.game_id})
+            db.commit()
+
+        # If it's a student, delete from databsase
+        db.execute("DELETE from students WHERE student_id = :student_id", {"student_id":session.get("student_id")})
         db.commit()
-
-    # If it's a student, delete from databsase
-    db.execute("DELETE from students WHERE student_id = :student_id", {"student_id":session.get("student_id")})
-    db.commit()
 
     # Forget teacher's user ID or student's ID:
     session.clear()
 
     # Send user back to home page
-    return redirect("/login")
+    return redirect("/")
 
 
 @app.route("/register", methods=["POST"])
@@ -362,8 +362,6 @@ def add_new_student():
     print("STUDENT = {}".format(student))
     session["student_id"] = student.student_id
 
-
-
     # Redirect to the game page and teacher room
     game_url = "/game/" + request.form.get("teacher")
 
@@ -560,16 +558,42 @@ def message(data):
 def message(data):
     join_room(data["room"])
 
+    print("SOMEONE IS JOINING ROOM")
+    print(data)
+
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":data["room"]}).fetchone()
 
     if "student" in data:
-
+        print("STUDENT IS JOINING ROOM")
 
         # Log user in automatically after registering
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name":data["student"]}).fetchone()
 
-        #
+        # Show all logged in students to teacher
         emit("show students in room", data, room=data["room"])
+
+############################################### NOOOOOOOOOOOOOOOOOOOOOOOO NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+@socketio.on('disconnect')
+def test_disconnect():
+    print(session)
+    if "student_id" in session:
+        student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session("student_id")}).fetchone()
+        teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":student.students_teacher}).fetchone()
+        print("DELETING A STUDENT")
+        db.execute("DELETE FROM students WHERE student_id = :student_id", {"student_id":session["student_id"]})
+        db.commit()
+        emit("show students in room")
+
+    print('Client disconnected')
+
+# Join a room
+@socketio.on("leave")
+def message(data):
+    leave_room(data["room"])
+
+    print("SOMEONE IS LEAVING ON A JET PLANE FROM THIS ROOM")
+    print(data)
+
 
 # Join a room
 @socketio.on("request teacher list")
