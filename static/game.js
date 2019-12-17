@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
+  document.getElementById("student_logout").addEventListener("click", function(){
+    socket.emit('log student out', {room: room_name});
+  });
+
+
   // Listen for question sent from server
   socket.on('question for students', data => {
 

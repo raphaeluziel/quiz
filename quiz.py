@@ -573,6 +573,16 @@ def message(data):
         emit("show students in room", data, room=data["room"])
 
 ############################################### NOOOOOOOOOOOOOOOOOOOOOOOO NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+@socketio.on('log student out')
+def message(data):
+    print("made it here, stooge")
+    print(data)
+    print(session)
+    student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
+    data["student"] = student.student_name
+    emit("show students in room", data, room=data["room"])
+
 @socketio.on('disconnect')
 def test_disconnect():
     print(session)

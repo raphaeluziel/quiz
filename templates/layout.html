@@ -34,9 +34,13 @@
         {% if not session.teacher_id %}
         <a href="{{ url_for('student') }}">student page</a>
         {% endif %}
-        {% if session.teacher_id or session.student_id %}
+        {% if session.teacher_id %}
         <a href="{{ url_for('logout') }}">logout</a>
         {% endif %}
+        {% if session.student_id %}
+        <button type="button" class="btn btn-link" id="student_logout">logout(S)</button>
+        {% endif %}
+
 
       </div>
 
