@@ -110,29 +110,12 @@ def login():
 @app.route("/logout")
 def logout():
 
-    """Log out"""
-
-    # If student initiates logout, find student in database
-    student_to_be_deleted = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
-
-    # If teacher has not already removed student from game, then do it
-    if student_to_be_deleted is not None:
-        game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student_to_be_deleted.students_active_game}).fetchone()
-
-        if game is not None:
-            students_in_game = game.students
-            students_in_game.remove(student_to_be_deleted.student_id)
-            db.execute("UPDATE games SET students = :students_in_game WHERE game_id = :game_id", {"students_in_game":students_in_game, "game_id":game.game_id})
-            db.commit()
-
-        # If it's a student, delete from databsase
-        db.execute("DELETE from students WHERE student_id = :student_id", {"student_id":session.get("student_id")})
-        db.commit()
+    """Log teacher out"""
 
     # Forget teacher's user ID or student's ID:
     session.clear()
 
-    # Send user back to home page
+    # Send teacher back to home page
     return redirect("/")
 
 
@@ -580,29 +563,43 @@ def message(data):
     print(data)
     print(session)
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
-    data["student"] = student.student_name
-    emit("show students in room", data, room=data["room"])
+    if student is not None:
+        data["student"] = student.student_name
+        data["leaving"] = True
+        emit("show students in room", data, room=data["room"])
+        game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student.students_active_game}).fetchone()
+        print("GAMNE")
+        if game is not None:
+            students_in_game = game.students
+            students_in_game.remove(student_to_be_deleted.student_id)
+            db.execute("UPDATE games SET students = :students_in_game WHERE game_id = :game_id", {"students_in_game":students_in_game, "game_id":game.game_id})
+            db.commit()
+
+        # If it's a student, delete from databsase
+        db.execute("DELETE from students WHERE student_id = :student_id", {"student_id":session.get("student_id")})
+        db.commit()
+
+    # Forget teacher's user ID or student's ID:
+    session.clear()
+    print("YO YO JOE")
+    print(data["room"])
+    print(session)
+    print("DATA BEFORE LOGGING KID OUT = {}".format(data))
+    emit("student is out", data, room=data["room"])
+
 
 @socketio.on('disconnect')
 def test_disconnect():
-    print(session)
-    if "student_id" in session:
-        student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session("student_id")}).fetchone()
-        teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":student.students_teacher}).fetchone()
-        print("DELETING A STUDENT")
-        db.execute("DELETE FROM students WHERE student_id = :student_id", {"student_id":session["student_id"]})
-        db.commit()
-        emit("show students in room")
+    #print(session)
+    #if "student_id" in session:
+        #student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session("student_id")}).fetchone()
+        #teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":student.students_teacher}).fetchone()
+        #print("DELETING A STUDENT")
+        #db.execute("DELETE FROM students WHERE student_id = :student_id", {"student_id":session["student_id"]})
+        #db.commit()
+        #emit("show students in room")
 
     print('Client disconnected')
-
-# Join a room
-@socketio.on("leave")
-def message(data):
-    leave_room(data["room"])
-
-    print("SOMEONE IS LEAVING ON A JET PLANE FROM THIS ROOM")
-    print(data)
 
 
 # Join a room

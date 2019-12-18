@@ -6,7 +6,7 @@
 
 {% block body %}
 
-  <h1>{{ student.student_name }}</h1>
+  <h1 id="students_name">{{ student.student_name }}</h1>
 
   <div>Teacher: <strong id="room_name">{{ teacher }}</strong></div>
   <div>Game: <strong id="game_name">{{ game.game_name or 'not started yet' }}</strong></div>

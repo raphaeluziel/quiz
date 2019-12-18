@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.emit('log student out', {room: room_name});
   });
 
+  // Server has deleted student, send browser to main page
+  socket.on('student is out', function(data) {
+    if (document.getElementById("students_name").innerHTML == data.student){
+        document.location.replace("/");
+    }
+  });
+
 
   // Listen for question sent from server
   socket.on('question for students', data => {
