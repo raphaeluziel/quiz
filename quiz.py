@@ -332,9 +332,6 @@ def add_new_student():
 
     """ Add new student """
 
-    # Log user in automatically after registering
-    print("REQUEST = {}".format(request.form))
-
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":request.form.get("teacher")}).fetchone()
 
     db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
@@ -342,7 +339,6 @@ def add_new_student():
     db.commit()
 
     student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
-    print("STUDENT = {}".format(student))
     session["student_id"] = student.student_id
 
     # Redirect to the game page and teacher room
@@ -398,9 +394,6 @@ def game(teacher):
     question_number = 0
     question = None
     message = ""
-
-    print("in game/uziel")
-    print("yes = {}".format(session))
 
     # Get the student if in session, otherwise redirect to student page to "log in"
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
@@ -498,8 +491,6 @@ def message(data):
 @socketio.on("calculate results")
 def message(data):
 
-    print("student session = {}".format(session.get("student_id")))
-
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id=:teacher_id", {"teacher_id": session.get("teacher_id")}).fetchone()
     game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name": teacher.active_game}).fetchone()
     students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchall()
@@ -541,15 +532,10 @@ def message(data):
 def message(data):
     join_room(data["room"])
 
-    print("SOMEONE IS JOINING ROOM")
-    print(data)
-
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":data["room"]}).fetchone()
 
     if "student" in data:
-        print("STUDENT IS JOINING ROOM")
 
-        # Log user in automatically after registering
         student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name":data["student"]}).fetchone()
 
         # Show all logged in students to teacher
@@ -559,16 +545,14 @@ def message(data):
 
 @socketio.on('log student out')
 def message(data):
-    print("made it here, stooge")
-    print(data)
-    print(session)
+
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session.get("student_id")}).fetchone()
     if student is not None:
         data["student"] = student.student_name
         data["leaving"] = True
         emit("show students in room", data, room=data["room"])
         game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student.students_active_game}).fetchone()
-        print("GAMNE")
+
         if game is not None:
             students_in_game = game.students
             students_in_game.remove(student_to_be_deleted.student_id)
@@ -581,25 +565,8 @@ def message(data):
 
     # Forget teacher's user ID or student's ID:
     session.clear()
-    print("YO YO JOE")
-    print(data["room"])
-    print(session)
-    print("DATA BEFORE LOGGING KID OUT = {}".format(data))
+
     emit("student is out", data, room=data["room"])
-
-
-@socketio.on('disconnect')
-def test_disconnect():
-    #print(session)
-    #if "student_id" in session:
-        #student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id":session("student_id")}).fetchone()
-        #teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":student.students_teacher}).fetchone()
-        #print("DELETING A STUDENT")
-        #db.execute("DELETE FROM students WHERE student_id = :student_id", {"student_id":session["student_id"]})
-        #db.commit()
-        #emit("show students in room")
-
-    print('Client disconnected')
 
 
 # Join a room

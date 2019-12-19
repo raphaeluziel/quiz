@@ -19,11 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Listen from server when student joins room
   socket.on('show students in room', function(data) {
-    console.log("SHOW STUDENTS IN ROOM IS ACTIVATED");
     document.getElementById("show_students_in_room").innerHTML = "Students Playing";
     if (data.leaving){
-      console.log("leaving in game control");
-      console.log(students_in_room.indexOf(data.student))
       var index = students_in_room.indexOf(data.student);
       if (index > -1) {
         students_in_room.splice(index, 1);
@@ -101,10 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Listen to server for signal that results are ready to display
   socket.on('show results', function() {
     document.location.replace("/results");
-  });
-
-  socket.on('hey there', function(){
-    console.log("YO THERE");
   });
 
 });
