@@ -83,9 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById("choose_name").addEventListener("click", function(){
 
-    console.log("HERE");
-
-
     student_name = document.getElementById("student_chosen_name").value;
 
     if (!student_list.includes(student_name)){
@@ -100,8 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "room": teacher_selected,
         "student": student_name
       }
-
-      console.log("DATA", data);
 
       socket.emit('join', data);
 

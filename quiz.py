@@ -582,12 +582,14 @@ def message():
 # Join a room
 @socketio.on("request student list")
 def message(data):
+    print("requesting student list {}".format(data))
     student_list = []
     teacher = db.execute("SELECT teacher_id FROM teachers WHERE username = :username", {"username":data["teacher"]}).fetchone()
     students = db.execute("SELECT student_name FROM students WHERE students_teacher = :teacher", {"teacher":teacher.teacher_id}).fetchall()
     for x in students:
         student_list.append(x.student_name)
     data = {"students":student_list}
+    print("DATA = {}".format(data))
     emit("student list", data)
 
 

@@ -17,6 +17,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   var students_in_room = [];
 
+  // Get a list of students associated with teacher chosen
+  socket.emit('request student list', {"teacher":room_name});
+
+  // Listen for server response with student list
+  socket.on('student list', function(data) {
+    students_in_room = data.students;
+    var ol = document.createElement("ol");
+    for (var i = 0; i < students_in_room.length; i++){
+      var li = document.createElement("li")
+      li.innerHTML = students_in_room[i];
+      ol.append(li)
+    }
+    document.getElementById("show_students_in_room").appendChild(ol);
+  });
+
   // Listen from server when student joins room
   socket.on('show students in room', function(data) {
     document.getElementById("show_students_in_room").innerHTML = "Students Playing";
