@@ -30,13 +30,13 @@ a{
   padding: 3px 0;
 }
 .game-control{
-  width: 70%;
+  width: 75%;
   margin-right: 2%;
-  background-color:lightblue;
+  padding-right: 2%;
+  border-right: 1px solid gray;
 }
 .student-results{
-  width: 25%;
-  background-color:salmon;
+  width: 20%;
 }
 .game-questions{
   cursor: pointer;
