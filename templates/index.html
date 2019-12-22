@@ -1,11 +1,46 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-{% block title %}
-  Home Page
-{% endblock %}
+  <head>
 
-{% block body %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <h1>Home Page</h1>
+    <title>No Frills Quiz</title>
 
-{% endblock %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" type="text/javascript" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  </head>
+
+  <body>
+    <div class="main">
+
+      <div class="top">
+        <h1>CS50W Final Project: No Frills Quiz Games</h1>
+      </div>
+
+      <div class="rest">
+
+        <p>I've been teaching since, well, before the internet.  Okay, maybe not that long ago.  But while I do love all the new technology that's out there to help teachers make learning easier, and more exciting, and I use them myself, I also know that technology is just a tool.  It's not going to turn a bad teacher into a good one.  And a good teacher will be good just with the use of a chalkboard and some chalk.  In that vein I tried to come up with a quiz game to use with your classes, perhaps when you review a unit, without many of the bells and whistles that others online quizzes come with, and that is almost as flexible as a chalkboard.</p>
+
+        <p>If you are a beginning teacher, though, check out <a href="https://www.plickers">Plickers</a>, a free, easy to use and powerful student response system.  Also try <a href="https://kahoot.com">Kahoot</a>, a quiz style learning app that I've seen first hand in my own school, generate the excitement they claim on their promotional videos.</p>
+
+        <p>If you're still interested in a less robust, more boring version than these, then, please continue by choosing your role.</p>
+
+        <div class="roles">
+          <a href="{{ url_for('student') }}"><div class="role-box"><img class="role-student" src="{{url_for('static', filename='student.svg')}}" /><br>Student</div></a>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href="{{ url_for('teacher') }}"><div class="role-box"><img class="role-teacher" src="{{url_for('static', filename='teacher.svg')}}" /><br>Teacher</div></a>
+        </div>
+      </div>
+
+    </div>
+
+  </body>

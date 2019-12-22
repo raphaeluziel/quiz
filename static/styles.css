@@ -45,6 +45,27 @@ a{
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.roles{
+  display: flex;
+  justify-content: center;
+}
+.role-box{
+  padding: 20px;
+  border: 1px solid gray;
+  text-align: center;
+  font-size: 150%;
+}
+.role-box > a{
+  text-decoration: none;
+}
+.role-teacher{
+  width: 200px;
+  height: 200px;
+}
+.role-student{
+  width: 200px;
+  height: 200px;
+}
 .show-game-question{
   padding: 4px 10px;
   border-radius: 4px;
