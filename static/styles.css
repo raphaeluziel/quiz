@@ -78,13 +78,14 @@ div.show-result-details:hover{
   overflow: hidden;
 }
 .nav a{
-  color: darkred;
-  text-decoration: none
+  color: green;
+  text-decoration: none;
   display: block;
 }
 .nav a:hover{
   background: lightblue;
 }
+
 #active-question{
   background-color: #d6f5cb;
   padding: 4px;

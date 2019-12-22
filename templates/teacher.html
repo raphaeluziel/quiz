@@ -16,7 +16,7 @@
           <li>
             <form class="form-inline" action="{{ url_for('game_control', teacher=teacher.username, game_name=game.game_name) }}" method="post">
               <span><strong>{{ game.game_name }}:&nbsp;&nbsp;</strong></span>
-              <button class="btn btn-link" type="submit" name="action" value="play">[<u>play from beginning</u>]</button>
+              <button class="btn btn-link" type="submit" name="action" value="play" id="clear_all">[<u>play from beginning</u>]</button>
               <button class="btn btn-link" type="submit" name="action" value="resume">[<u>resume</u>]</button>
               <button class="btn btn-link" type="submit" name="action" value="edit">[<u>edit</u>]</button>
               <button class="btn btn-link" type="submit" name="action" value="delete">[<u>delete</u>]</button>
@@ -103,5 +103,14 @@
     <br><br>
     <button type="submit" class="btn btn-primary btn-sm">Add Question</button>
   </form>
+
+  <script type="text/javascript">
+    document.getElementById("clear_all").onclick = function(){
+      var response = confirm("This will log all students out.");
+      if (response == false){
+        event.preventDefault()
+      }
+    }
+  </script>
 
 {% endblock %}

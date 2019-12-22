@@ -536,13 +536,14 @@ def message(data):
 
     if "student" in data:
 
-        student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name":data["student"]}).fetchone()
+        student = db.execute("SELECT * FROM students WHERE student_name = :student_name AND students_teacher = :students_teacher",
+        {"student_name":data["student"], "students_teacher":teacher.teacher_id}).fetchone()
 
         # Show all logged in students to teacher
         emit("show students in room", data, room=data["room"])
 
-############################################### NOOOOOOOOOOOOOOOOOOOOOOOO NOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
+# Student initiates a log out
 @socketio.on('log student out')
 def message(data):
 
@@ -569,7 +570,7 @@ def message(data):
     emit("student is out", data, room=data["room"])
 
 
-# Join a room
+
 @socketio.on("request teacher list")
 def message():
     teacher_list = []
@@ -579,17 +580,15 @@ def message():
     data = {"teachers":teacher_list}
     emit("teacher list", data)
 
-# Join a room
+
 @socketio.on("request student list")
 def message(data):
-    print("requesting student list {}".format(data))
     student_list = []
     teacher = db.execute("SELECT teacher_id FROM teachers WHERE username = :username", {"username":data["teacher"]}).fetchone()
     students = db.execute("SELECT student_name FROM students WHERE students_teacher = :teacher", {"teacher":teacher.teacher_id}).fetchall()
     for x in students:
         student_list.append(x.student_name)
     data = {"students":student_list}
-    print("DATA = {}".format(data))
     emit("student list", data)
 
 
@@ -649,7 +648,6 @@ def score():
     # Query database for information to display on student score page
     student = db.execute("SELECT * FROM students WHERE student_id = :student_id", {"student_id": session.get("student_id")}).fetchone()
     game = db.execute("SELECT * FROM games WHERE game_name = :game_name", {"game_name":student.students_active_game}).fetchone()
-    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
 
     # Student is not in session
     if student is None:
@@ -657,7 +655,9 @@ def score():
 
     # Something went wrong, session lost its game information
     if game is None:
-        return redirect("/student")
+        return redirect("/end")
+
+    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list)", {"question_list":game.question_list}).fetchall()
 
     results_list = []
     result = {}
