@@ -18,7 +18,7 @@
               <span><strong>{{ game.game_name }}:&nbsp;&nbsp;</strong></span>
               <button class="btn btn-link" type="submit" name="action" value="play" id="clear_all">[<u>play from beginning</u>]</button>
               <button class="btn btn-link" type="submit" name="action" value="resume">[<u>resume</u>]</button>
-              <button class="btn btn-link" type="submit" name="action" value="edit">[<u>edit</u>]</button>
+              <a href="/edit_game/{{ game.game_id }}">[edit]</a>
               <button class="btn btn-link" type="submit" name="action" value="delete">[<u>delete</u>]</button>
             </form>
           </li>
