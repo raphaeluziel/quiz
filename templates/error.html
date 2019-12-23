@@ -6,8 +6,11 @@
 
 {% block body %}
 
-    <h1 class="error">{{ code }}</h1>
-    <h2>Sorry!  The page you have requested could not be found.</h2>
-    <p>Message: {{ message }}</p>
+  <div class="intro" style="text-align: center">
+    <h2>Sorry!</h2>
+    <h4 style="color:darkred;">Somewhere in my code,<br>there lies a bug uncaught,<br>which led you here.</h4>
+    <p>{{ message }}</p>
+  </div>
+
 
 {% endblock %}

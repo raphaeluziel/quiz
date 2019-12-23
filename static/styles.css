@@ -11,12 +11,12 @@ a{
   max-width: 1300px;
   margin: 0 auto;
 }
-.flex-container{
-  display: flex;
-}
 .error{
   color: red;
   font-size: 1.2em;
+}
+.flex-container{
+  display: flex;
 }
 .form-check{
   margin-left: 20px;
@@ -35,6 +35,12 @@ a{
   padding-right: 2%;
   border-right: 1px solid gray;
 }
+.iama{
+  text-align: center;
+}
+.intro{
+  margin: 10px auto;
+}
 .student-results{
   width: 20%;
 }
@@ -44,6 +50,9 @@ a{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.intro{
+  max-width: 800px;
 }
 .roles{
   display: flex;
@@ -105,6 +114,32 @@ div.show-result-details:hover{
 }
 .nav a:hover{
   background: lightblue;
+}
+
+@media (max-width: 800px) {
+  body {
+    margin: 10px;
+  }
+  .game-control{
+    width: 100%;
+    margin-right: 2%;
+    padding-right: 2%;
+    border-right: 0px;
+  }
+  .deleteformobile{
+    display: none;
+  }
+  .role-teacher{
+    width: 100px;
+    height: 100px;
+  }
+  .role-student{
+    width: 100px;
+    height: 100px;
+  }
+  .student-results{
+    display: none;
+  }
 }
 
 #active-question{

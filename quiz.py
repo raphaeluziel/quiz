@@ -46,6 +46,13 @@ def index():
 
     return render_template("index.html")
 
+@app.route("/error")
+def error():
+
+    """Bug in my code should end up taking user here instead of a crash"""
+
+    return render_template("error.html")
+
 
 
 """ ***********************TEACHER LOGIN SECTION ************************** """

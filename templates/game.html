@@ -8,14 +8,16 @@
 
   <h1 id="students_name">{{ student.student_name }}</h1>
 
-  <div>Teacher: <strong id="room_name">{{ teacher }}</strong></div>
-  <div>Game: <strong id="game_name">{{ game.game_name or 'not started yet' }}</strong></div>
+  <div class="intro">
+    <div>Teacher: <strong id="room_name">{{ teacher }}</strong></div>
+    <div>Game: <strong id="game_name">{{ game.game_name or 'not started yet' }}</strong></div>
 
-  <br>
+    <br>
 
-  <div id="question_received"><em>Please wait until {{ teacher }} sends the next question.</em></div>
+    <div id="question_received"><em>Please wait until {{ teacher }} sends the next question.</em></div>
 
-  <div>{{ message }}</div>
+    <div>{{ message }}</div>
+  </div>
 
   <!-- Needed to transmit inofrmation to game.js to send through sockets -->
   <div id="student_id" hidden>{{ student.student_id }}</div>
