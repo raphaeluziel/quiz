@@ -1,8 +1,7 @@
 Allow teacher to delete students
 change .env removing FLASK_DEBUG
 Make accessible to screen readers
-Error if end game when no questions are sent
-Make TEST user
+Add error page for unknown None errors
 
 HEROKU:
 git push heroku master
