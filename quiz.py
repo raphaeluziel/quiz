@@ -46,16 +46,20 @@ def index():
 
     return render_template("index.html")
 
+
 @app.route("/error")
 def error():
 
-    """Bug in my code should end up taking user here instead of a crash"""
+    """
+    Bug in my code should end up taking user here instead of a crash
+    These are bugs that I have not been able to reproduce or solve
+    """
 
     return render_template("error.html")
 
 
 
-""" ***********************TEACHER LOGIN SECTION ************************** """
+""" *********************** TEACHER LOGIN SECTION ************************** """
 
 def login_required(f):
     """
@@ -119,7 +123,7 @@ def logout():
 
     """Log teacher out"""
 
-    # Forget teacher's user ID or student's ID:
+    # Forget teacher's user ID:
     session.clear()
 
     # Send teacher back to home page
@@ -129,9 +133,9 @@ def logout():
 @app.route("/register", methods=["POST"])
 def register():
 
-    """Register a new user"""
+    """Register a new teacher"""
 
-    # Ensure user filled out form with all required information
+    # Ensure teacher filled out form with all required information
     if not request.form.get("name"):
         message = "Please enter your full name"
         return render_template("login.html", message=message)
@@ -148,9 +152,10 @@ def register():
     # Encrypt password
     hash = generate_password_hash(request.form.get("password"))
 
-    # Add user to database, unless user already exists
+    # Add teacher to database, unless teacher already exists
     try:
-        db.execute("INSERT INTO teachers (name, username, email, hash) VALUES (:name, :username, :email, :hash)",
+        db.execute("INSERT INTO teachers (name, username, email, hash) \
+            VALUES (:name, :username, :email, :hash)",
             {"name":request.form.get("name"), "username":request.form.get("username"),
             "email":request.form.get("email"), "hash":hash})
         db.commit()
@@ -162,7 +167,7 @@ def register():
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username": request.form.get("username")}).fetchone()
     session["teacher_id"] = teacher.teacher_id
 
-    # All is good, let user start searching for books
+    # All is good, let teacher start using the app
     return redirect('/teacher')
 
 
@@ -175,13 +180,12 @@ def teacher():
 
     """ This is the main page for the teacher to create games, add questions """
 
-    # Query database for information to display on the main teachedr page
+    # Query database for information to display on the main teacher page
     teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
     questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher ORDER BY question_id", {"teacher": session.get("teacher_id")}).fetchall()
     games = db.execute("SELECT * FROM games WHERE teacher = :teacher ORDER BY game_id DESC", {"teacher": session.get("teacher_id")}).fetchall()
 
     return render_template("teacher.html", questions=questions, games=games, teacher=teacher)
-
 
 
 @app.route("/create_new_game", methods=["POST"])
@@ -197,10 +201,14 @@ def create_new_game():
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
+    # Teacher clicked on create game button on form
     if request.form.get("create_game"):
+
         if request.form.get("game_name") == "":
+            # Has teacher provided a name for the game?
             flash("Please provide a name for your game", 'error')
             return redirect(url_for('teacher'))
+
         else:
             # Ensure teacher has not already created a game with that name
             games = db.execute("SELECT game_name FROM games WHERE teacher = :teacher", {"teacher": session.get("teacher_id")}).fetchall()
@@ -214,6 +222,7 @@ def create_new_game():
                        {"teacher":session.get("teacher_id"), "game_name":request.form.get("game_name"), "question_list":question_list})
             db.commit()
 
+    # Teacher clicked on delete question in form
     if request.form.get("delete_question"):
 
         # Find out which games contain the questions to be deleted
@@ -224,7 +233,6 @@ def create_new_game():
             new_question_list = game_affected.question_list.copy()
             for x in new_question_list:
                 if x in question_list:
-                    sys.stdout.write("Inside the loop")
                     new_question_list.remove(x)
             db.execute("UPDATE games SET question_list = :question_list WHERE game_name = :game_name", {"question_list":new_question_list, "game_name":game_affected.game_name})
 
@@ -240,7 +248,8 @@ def edit_game(game_id):
 
     """ Edit a game """
 
-    game = db.execute("SELECT * FROM games WHERE game_id = :game_id", {"game_id":game_id}).fetchone()
+    # Get information from database about the game, it's questions and it's teacher
+    game = db.execute("SELECT * FROM games WHERE game_id = :game_id AND teacher = :teacher", {"game_id":game_id, "teacher":session.get("teacher_id")}).fetchone()
     questions = db.execute("SELECT * FROM questions WHERE teacher = :teacher ORDER BY question_id", {"teacher":session.get("teacher_id")}).fetchall()
     teacher = db.execute("SELECT username FROM teachers WHERE teacher_id = :teacher_id", {"teacher_id":session.get("teacher_id")}).fetchone()
 
@@ -249,8 +258,8 @@ def edit_game(game_id):
     for i in request.form.getlist("questions"):
         question_list.append(int(i))
 
+    # User clicks button on the same page that indicated game is changed
     if request.method == "POST":
-
         db.execute("UPDATE games SET game_name = :game_name, question_list = :question_list WHERE game_id = :game_id",
                     {"game_name":request.form.get("game_name"), "question_list":question_list, "game_id":game_id})
         db.commit()
@@ -258,9 +267,13 @@ def edit_game(game_id):
 
         return redirect("/game_control/" + teacher.username + "/" + game.game_name)
 
-    question_list = game.question_list
-
-    return render_template("edit_game.html", game=game, questions=questions, question_list=question_list)
+    # Does the game the teacher is trying to edit exist, and belong to that teacher?
+    if (game is None) or (teacher is None):
+        flash("Or are you trying to edit a game that does not exist, or is not one you wrote?", 'error')
+        return redirect("/error")
+    else:
+        question_list = game.question_list
+        return render_template("edit_game.html", game=game, questions=questions, question_list=question_list)
 
 
 @app.route("/add_new_question", methods=["POST"])
@@ -288,11 +301,11 @@ def edit_question(question_id):
 
     """ Edit a question """
 
-    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id", {"question_id":question_id}).fetchone()
+    question = db.execute("SELECT * FROM questions WHERE question_id = :question_id AND teacher = :teacher", {"question_id":question_id, "teacher":session.get("teacher_id")}).fetchone()
 
+    # Teacher gets here by clicking on the button on this page to edit the question
     if request.method == "POST":
-
-        # Insert question into database
+        # Update question
         db.execute("UPDATE questions SET question = :question, choice_a = :choice_a, choice_c = :choice_c, \
                     choice_d = :choice_d, answer = :answer WHERE question_id = :question_id",
                    {"question_id": question_id,
@@ -303,9 +316,13 @@ def edit_question(question_id):
                    "choice_d":request.form.get("choice_d"),
                    "answer":request.form.get("answer")})
         db.commit()
-
         return redirect("/teacher")
 
+    # Teacher arrived here via get, so check if the question is valid
+    # Does this question exist, and does it belong to the teacher trying to edit it?
+    if question is None:
+        flash("Or are you trying to edit a question that does not exist, or is not one you wrote?", 'error')
+        return redirect("/error")
     else:
         return render_template("question.html", question=question)
 
@@ -341,9 +358,15 @@ def add_new_student():
 
     teacher = db.execute("SELECT * FROM teachers WHERE username = :username", {"username":request.form.get("teacher")}).fetchone()
 
-    db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
-                {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
-    db.commit()
+    try:
+        db.execute("INSERT INTO students (student_name, students_teacher) VALUES (:student_name, :students_teacher)",
+                    {"student_name":request.form.get("student"), "students_teacher":teacher.teacher_id})
+        db.commit()
+    except:
+        # I am not sure - this error should never happen, and I haven't
+        # been able to reproduce it, but have seen it occur
+        flash("Error inserting student into database.  You can choose a different username for this game, or teacher can start game from beginning", 'error')
+        return redirect("/error")
 
     student = db.execute("SELECT * FROM students WHERE student_name = :student_name", {"student_name": request.form.get("student")}).fetchone()
     session["student_id"] = student.student_id
@@ -365,28 +388,31 @@ def game_control(teacher, game_name):
 
     # Query database for information to display on the game control page
     game = db.execute("SELECT * FROM games WHERE game_name = :game AND teacher = :teacher", {"game":game_name, "teacher":session.get("teacher_id")}).fetchone()
-    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list) ORDER BY question_id", {"question_list":game.question_list}).fetchall()
-    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
-    students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher", {"teacher": teacher.teacher_id}).fetchall()
-
-    if request.form.get("action") == "play":
-        db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
-        db.execute("UPDATE games SET students = :students", {"students":[]})
-        db.commit()
-
-    if request.form.get("action") == "delete":
-        db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":game_name})
-        db.commit()
-        return redirect("/teacher")
 
     # If teacher gets here via a get, and the game does not exist redirect them
     # back to the teacher page, otherwise add the game name to the active game
     if game is None:
         return redirect("/teacher")
-    else:
-        db.execute("UPDATE teachers SET active_game = :active_game WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id"), "active_game":game_name})
+
+    questions = db.execute("SELECT * FROM questions WHERE question_id = ANY(:question_list) ORDER BY question_id", {"question_list":game.question_list}).fetchall()
+    teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
+    students = db.execute("SELECT * FROM students WHERE students_teacher = :teacher", {"teacher": teacher.teacher_id}).fetchall()
+
+    # Set the active game for the teacher
+    db.execute("UPDATE teachers SET active_game = :active_game WHERE teacher_id = :teacher_id", {"teacher_id": session.get("teacher_id"), "active_game":game_name})
+    db.commit()
+
+    # Teacher wants to start game from scratch, delete all students
+    if request.form.get("action") == "play":
+        db.execute("DELETE FROM students WHERE students_teacher = :students_teacher", {"students_teacher": teacher.teacher_id})
+        db.execute("UPDATE games SET students = :students", {"students":[]})
         db.commit()
-        teacher = db.execute("SELECT * FROM teachers WHERE teacher_id = :teacherid", {"teacherid": session.get("teacher_id")}).fetchone()
+
+    # Teacher clicks on delete game
+    if request.form.get("action") == "delete":
+        db.execute("DELETE FROM games WHERE teacher = :teacher AND game_name = :game_name", {"teacher":session.get("teacher_id"), "game_name":game_name})
+        db.commit()
+        return redirect("/teacher")
 
     return render_template("game_control.html", questions=questions, teacher=teacher, students=students)
 

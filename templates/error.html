@@ -9,8 +9,17 @@
   <div class="intro" style="text-align: center">
     <h2>Sorry!</h2>
     <h4 style="color:darkred;">Somewhere in my code,<br>there lies a bug uncaught,<br>which led you here.</h4>
-    <p>{{ message }}</p>
   </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <p class=flashes>
+      {% for category, message in messages %}
+        <div class="error" style="text-align: center;">{{ message }}</div>
+      {% endfor %}
+      </p>
+    {% endif %}
+  {% endwith %}
 
 
 {% endblock %}
