@@ -12,4 +12,3 @@ The javascript files corresponding to the html files are mostly being used to ha
 
 The working website is at https://raphael-quiz.herokuapp.com/
 The github is at https://github.com/raphaeluziel/quiz
-# quiz
