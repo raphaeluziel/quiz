@@ -10,4 +10,10 @@ server {
       	proxy_set_header Upgrade $http_upgrade;
       	proxy_set_header Connection "Upgrade";
     }
+
+    location /static  {
+         include  /etc/nginx/mime.types;
+         root /home/raphaeluziel/quiz/;
+     }
+
 }
