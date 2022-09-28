@@ -3,7 +3,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name quiz.raphaeluziel.net;
+    server_name quiz.raphaeluziel.com;
 
     location / {
         include proxy_params;

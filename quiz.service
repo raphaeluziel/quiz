@@ -6,8 +6,8 @@ After=network.target
 User=raphaeluziel
 Group=www-data
 WorkingDirectory=/home/raphaeluziel/quiz
-Environment="PATH=/home/raphaeluziel/quiz/quizenv/bin"
-ExecStart=/home/raphaeluziel/quiz/quizenv/bin/gunicorn --worker-class eventlet -w 1 --bind unix:quiz.sock wsgi:app  --no-sendfile
+Environment="PATH=/home/raphaeluziel/quiz/venv/bin"
+ExecStart=/home/raphaeluziel/quiz/venv/bin/gunicorn --worker-class eventlet -w 1 --bind unix:quiz.sock wsgi:app  --no-sendfile
 
 
 [Install]
